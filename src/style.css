@@ -677,3 +677,83 @@ body.bloqueado .aviso-player {
     min-height: 0;
   }
 }
+
+/* ---------- Labial hacker: terminal verde de los 90 ---------- */
+.terminal {
+  width: min(520px, 100%);
+  background: #001a00;
+  color: #39ff14;
+  max-height: calc(100vh - 32px);
+  overflow-y: auto;
+}
+
+.terminal.concedido {
+  background: #003300;
+}
+
+.terminal-titulo {
+  font-family: var(--fuente-pixel);
+  font-size: clamp(14px, 4vw, 20px);
+  color: #39ff14;
+  text-shadow: 0 0 8px #39ff14;
+  margin: 0 0 8px;
+}
+
+.terminal-estado {
+  min-height: 1.4em;
+}
+
+.terminal-progreso {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+  margin: 0 0 16px;
+}
+
+.casilla {
+  width: 28px;
+  height: 14px;
+  border: 2px solid #39ff14;
+}
+
+.casilla.lista {
+  background: #39ff14;
+}
+
+.tablero-hackeo {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(96px, 150px));
+  gap: 16px;
+  justify-content: center;
+  margin: 0 0 16px;
+}
+
+.boton-hackeo {
+  aspect-ratio: 1;
+  font-size: clamp(40px, 12vw, 64px);
+  color: rgba(0, 0, 0, 0.55);
+  background: var(--color);
+  border: 4px solid rgba(255, 255, 255, 0.5);
+  border-radius: 12px;
+  opacity: 0.55;
+  cursor: pointer;
+  touch-action: manipulation;
+  transition: opacity 0.1s, transform 0.1s;
+}
+
+.boton-hackeo.encendido {
+  opacity: 1;
+  transform: scale(1.06);
+  box-shadow: 0 0 24px var(--color);
+  border-color: #fff;
+}
+
+.tablero-hackeo.mirando .boton-hackeo {
+  cursor: default;
+}
+
+.boton-salir {
+  min-width: 120px;
+  background: #333;
+  border-color: #666 #111 #111 #666;
+}

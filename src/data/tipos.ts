@@ -62,6 +62,8 @@ export interface Pista {
 
 export interface Testigo {
   nombre: string;
+  /** Una computadora de V.I.L.E. se hackea con el labial en vez de conversar. */
+  tipo?: 'persona' | 'computadora';
   pista: Pista;
   /** Si se indica, el testigo solo aparece en ese nivel. */
   nivel?: Dificultad;

@@ -4,9 +4,12 @@ import { sonar } from '../core/sonido';
 import { CIUDADES } from '../data/ciudades';
 import { OPERATIVOS } from '../data/operativos';
 import type { Caso, IdCiudad } from '../data/tipos';
+import { largoSegunNivel } from '../gadgets/labial';
+import { crearComputadora } from '../npc/computadora';
 import { crearPersonaje, type Personaje } from '../npc/personaje';
 import { mostrarLibreta, mostrarResultado } from '../ui/caso-ui';
 import { mostrarCrimeNet } from '../ui/crimenet';
+import { mostrarHackeo } from '../ui/hackeo';
 import { mostrarMapa } from '../ui/mapa';
 import { avisoPlayer, dialogo, elemento, type Linea } from '../ui/pantallas';
 import { crearCiudad, semillaDe, type Ciudad } from '../world/ciudad';
@@ -54,6 +57,8 @@ export function iniciarPartida(caso: Caso, mundo: Mundo): Partida {
   let ciudad: Ciudad | null = null;
   let testigos: TestigoEnMundo[] = [];
   let enPantalla = false;
+  /** Computadoras que se dejaron a medio hackear: no se reabren hasta que Carmen se aleje. */
+  const enfriando = new Set<number>();
   let terminada = false;
 
   // --- Ladrón en la ciudad final
@@ -105,9 +110,11 @@ export function iniciarPartida(caso: Caso, mundo: Mundo): Partida {
       return;
     }
     const actuales = estado.testigosActuales();
+    enfriando.clear();
     const lugares = lugaresTestigos(ciudad, actuales.length);
     testigos = actuales.map((t, indice) => {
-      const personaje = crearPersonaje({ ropa: t.color, accesorio: 'gorra' });
+      const personaje =
+        t.tipo === 'computadora' ? crearComputadora() : crearPersonaje({ ropa: t.color, accesorio: 'gorra' });
       personaje.modelo.position.copy(lugares[indice]);
       mirarHacia(personaje.modelo, ciudad!.inicio);
       mundo.escena.add(personaje.modelo);
@@ -136,12 +143,32 @@ export function iniciarPartida(caso: Caso, mundo: Mundo): Partida {
   }
 
   function hablarConTestigo(t: TestigoEnMundo): void {
+    abrirPantalla();
+    if (estado.testigosActuales()[t.indice].tipo !== 'computadora') {
+      mostrarPista(t);
+      return;
+    }
+    // Computadora de V.I.L.E.: primero hay que hackearla con el labial.
+    const aprendiz = mundo.nivel() === 'aprendiz';
+    mostrarHackeo({
+      largo: largoSegunNivel(mundo.nivel()),
+      msPorPaso: aprendiz ? 750 : 550,
+      alLograrlo: () => mostrarPista(t),
+      alSalir: () => {
+        enfriando.add(t.indice);
+        cerrarPantalla();
+        avisoPlayer(aprendiz ? 'Vuelve cuando quieras.' : 'Puedes volver a hackearla cuando quieras.', 3);
+      },
+    });
+  }
+
+  function mostrarPista(t: TestigoEnMundo): void {
     const datos = estado.testigosActuales()[t.indice];
     const pista = estado.hablarCon(t.indice);
     t.personaje.marcar(false);
-    abrirPantalla();
+    const quien = datos.tipo === 'computadora' ? 'computadora' : 'testigo';
     dialogo(
-      [{ quien: 'testigo', nombre: datos.nombre, texto: pista.texto, aprendiz: pista.aprendiz, imagen: pista.imagen }],
+      [{ quien, nombre: datos.nombre, texto: pista.texto, aprendiz: pista.aprendiz, imagen: pista.imagen }],
       () => {
         cerrarPantalla();
         if (estado.pistasCompletas) prepararViaje();
@@ -150,7 +177,7 @@ export function iniciarPartida(caso: Caso, mundo: Mundo): Partida {
           avisoPlayer(
             mundo.nivel() === 'aprendiz'
               ? `¡Bien! Faltan ${faltan}.`
-              : `¡Buena pista! Te ${faltan === 1 ? 'falta 1 testigo' : `faltan ${faltan} testigos`}.`,
+              : `¡Buena pista! Te ${faltan === 1 ? 'falta 1 pista' : `faltan ${faltan} pistas`}.`,
             3,
           );
         }
@@ -220,7 +247,7 @@ export function iniciarPartida(caso: Caso, mundo: Mundo): Partida {
           avisoPlayer(
             mundo.nivel() === 'aprendiz'
               ? `¡Llegamos a ${nombre}!`
-              : `¡Llegamos a ${nombre}! Busca a los testigos con «!».`,
+              : `¡Llegamos a ${nombre}! Busca el «!» amarillo.`,
             4,
           );
         }
@@ -328,8 +355,8 @@ export function iniciarPartida(caso: Caso, mundo: Mundo): Partida {
       }),
       segun({
         quien: 'player',
-        texto: 'Busca a los testigos que tienen un «!» amarillo y escucha sus pistas.',
-        aprendiz: 'Busca a las personas con «!» amarillo.',
+        texto: 'Busca el «!» amarillo: testigos que vieron algo y computadoras de V.I.L.E. para hackear.',
+        aprendiz: 'Busca el «!» amarillo.',
       }),
       segun({ quien: 'carmen', texto: '¡Vamos a devolverlo a su dueño!', aprendiz: '¡A devolverlo!' }),
     ],
@@ -345,7 +372,12 @@ export function iniciarPartida(caso: Caso, mundo: Mundo): Partida {
       for (const t of testigos) {
         if (estado.yaHablo(t.indice)) continue;
         const p = t.personaje.modelo.position;
-        if (Math.hypot(p.x - carmen.x, p.z - carmen.z) < DISTANCIA_HABLAR && Math.abs(p.y - carmen.y) < 2.5) {
+        const cerca = Math.hypot(p.x - carmen.x, p.z - carmen.z) < DISTANCIA_HABLAR && Math.abs(p.y - carmen.y) < 2.5;
+        if (enfriando.has(t.indice)) {
+          if (Math.hypot(p.x - carmen.x, p.z - carmen.z) > DISTANCIA_HABLAR + 1.5) enfriando.delete(t.indice);
+          continue;
+        }
+        if (cerca) {
           hablarConTestigo(t);
           return;
         }
