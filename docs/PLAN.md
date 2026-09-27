@@ -44,7 +44,7 @@ avión. **Chase Devineaux** (ACME) la persigue y siempre llega tarde (gag recurr
 
 **Bucle de una misión ("Caso")**, adaptado del clásico de 1985:
 
-1. **Aviso retro** (pantalla VGA): Player cuenta qué quiere robar V.I.L.E. ("¡Le Chèvre va tras el Gato de la Suerte de oro!").
+1. **Aviso retro** (pantalla VGA): Player cuenta que alguien de V.I.L.E. robó un tesoro ("¡Alguien de V.I.L.E. robó el Gato de la Suerte dorado!"); quién fue se descubre en la Crime Net.
 2. **Exploración libre** del barrio 3D de la ciudad (estilo bloques).
 3. **Buscar pistas** (3 por ciudad): hablar con testigos, mirar con **binoculares**, **hackear** una computadora con el **labial**.
    - *Pista de destino* con imagen: bandera, animal, comida, monumento, moneda, idioma ("Dijo *¡Che!* y pidió un mate 🧉").
@@ -130,9 +130,11 @@ docs/              PLAN.md, INVESTIGACION.md
 2. **Carmen jugable**: personaje de bloques, cámara 3ª persona, correr/saltar, colisiones, controles táctiles. ✅
 3. **Gancho** con apuntado automático (tirón hasta la azotea; el balanceo queda para v2). ✅
 4. **UI retro + voz**: diálogos con retrato y máquina de escribir, narración, textos por nivel, menú de pausa con ajustes, sonidos chiptune. ✅
-5. **Motor de casos**: testigos, pistas con imagen, Crime Net, mapamundi, estrellas y rango.
+5. **Motor de casos**: testigos, pistas con imagen, Crime Net, mapamundi, estrellas y rango. ✅
+   - Caso 1 jugable completo (San Francisco → Ciudad de México → Buenos Aires, Le Chèvre).
+   - Pendiente: reloj suave del nivel Detective (hoy las estrellas dependen solo de los destinos equivocados).
 6. **Labial hacker**: minijuego.
-7. **Prólogo + Caso 1** completos.
+7. **Prólogo en la Isla de V.I.L.E.** (el Caso 1 ya quedó hecho en el hito 5).
 8. **Pulido**: audio, guardado, Álbum de Ciudades, aviso de fan.
 9. **v2 / v3**.
 

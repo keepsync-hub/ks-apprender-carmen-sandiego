@@ -22,6 +22,13 @@ const PALETA: Paleta = {
   c: '#c8a46a', // gabardina beige
   x: '#2a2a3a', // traje oscuro
   f: '#d98a6a', // pecas
+  q: '#8a8a96', // gris Le Chèvre
+  l: '#e8e2d0', // cuernos
+  u: '#7a4a2b', // café El Topo
+  j: '#ffd23f', // lámpara
+  v: '#5a2f8a', // morado oscuro
+  z: '#f2d27a', // pelo rubio
+  p: '#e07bb0', // rosado
 };
 
 const PLAYER = [
@@ -142,6 +149,106 @@ const CHASE = [
   '..cccccccccccc..',
 ];
 
+// Le Chèvre: capucha gris con cuernos de cabra.
+const LE_CHEVRE = [
+  '..l..........l..',
+  '..ll........ll..',
+  '...lqqqqqqqql...',
+  '...qqqqqqqqqq...',
+  '...qqssssssqq...',
+  '...qsesssesq....',
+  '...qssssssssq...',
+  '...qssssssssq...',
+  '....ssmmmmss....',
+  '.....ssssss.....',
+  '......ssss......',
+  '....qqqqqqqq....',
+  '...qqqqqqqqqq...',
+  '..qqqqqqqqqqqq..',
+  '..qqqqqqqqqqqq..',
+  '..qqqqqqqqqqqq..',
+];
+
+// El Topo: casco café con lámpara y lentes.
+const EL_TOPO = [
+  '................',
+  '.......jj.......',
+  '....uuuuuuuu....',
+  '...uuuuuuuuuu...',
+  '..uuuuuuuuuuuu..',
+  '...eeeessseeee..',
+  '...eaaeeseaae...',
+  '...ssssssssss...',
+  '....ssmmmmss....',
+  '.....ssssss.....',
+  '......ssss......',
+  '....uuuuuuuu....',
+  '...uuuuuuuuuu...',
+  '..uuuuuuuuuuuu..',
+  '..uuuuuuuuuuuu..',
+  '..uuuuuuuuuuuu..',
+];
+
+// Tigress: antifaz morado con orejas de gato.
+const TIGRESS = [
+  '..vv........vv..',
+  '..vvv......vvv..',
+  '...vvvvvvvvvv...',
+  '...vvvvvvvvvv...',
+  '...vvvvvvvvvv...',
+  '...vjevvvvejv...',
+  '...vvvvvvvvvv...',
+  '...ssssssssss...',
+  '....ssmmmmss....',
+  '.....ssssss.....',
+  '......ssss......',
+  '....yyyyyyyy....',
+  '...yyyyyyyyyy...',
+  '..yyyyyyyyyyyy..',
+  '..yyyyyyyyyyyy..',
+  '..yyyyyyyyyyyy..',
+];
+
+// Paperstar: pelo rubio con coletas y ropa rosada.
+const PAPERSTAR = [
+  '................',
+  '....zzzzzzzz....',
+  '...zzzzzzzzzz...',
+  '.zzzzssssssszzz.',
+  '.zz.ssssssss.zz.',
+  '.zz.sessssesszz.',
+  '.z..ssssssss..z.',
+  '....ssssssss....',
+  '....ssmmmmss....',
+  '.....ssssss.....',
+  '......ssss......',
+  '....pppppppp....',
+  '...pppppppppp...',
+  '..pppppppppppp..',
+  '..pppppppppppp..',
+  '..pppppppppppp..',
+];
+
+// Testigo genérico con gorra.
+const TESTIGO = [
+  '................',
+  '....bbbbbbbb....',
+  '...bbbbbbbbbb...',
+  '...bbbbbbbbbbbb.',
+  '...hhssssssh....',
+  '...hsesssesh....',
+  '...ssssssssss...',
+  '...ssssssssss...',
+  '....ssmmmmss....',
+  '.....ssssss.....',
+  '......ssss......',
+  '....gggggggg....',
+  '...gggggggggg...',
+  '..gggggggggggg..',
+  '..gggggggggggg..',
+  '..gggggggggggg..',
+];
+
 export const RETRATOS = {
   player: PLAYER,
   carmen: CARMEN,
@@ -149,6 +256,11 @@ export const RETRATOS = {
   ivy: IVY,
   jefa: JEFA,
   chase: CHASE,
+  'le-chevre': LE_CHEVRE,
+  'el-topo': EL_TOPO,
+  tigress: TIGRESS,
+  paperstar: PAPERSTAR,
+  testigo: TESTIGO,
 } as const;
 export type Personaje = keyof typeof RETRATOS;
 
