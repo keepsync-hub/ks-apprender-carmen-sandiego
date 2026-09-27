@@ -19,7 +19,7 @@ npm run preview  # prueba el build con la ruta de GitHub Pages
 
 ## Publicación
 
-Cada push a `main` publica el sitio con GitHub Actions
+Cada PR compila y verifica el juego; cada merge a `main` lo publica con GitHub Actions
 (`.github/workflows/deploy.yml`). Requiere, una sola vez, activar en
 **Settings → Pages → Source: GitHub Actions**.
 

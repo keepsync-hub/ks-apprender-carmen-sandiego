@@ -1,6 +1,9 @@
 name: Publicar en GitHub Pages
 
+# En cada PR: compila y verifica que el juego se construye sin errores.
+# Al hacer merge (push) a main: compila y publica el sitio.
 on:
+  pull_request:
   push:
     branches: [main]
   workflow_dispatch:
@@ -11,8 +14,9 @@ permissions:
   id-token: write
 
 concurrency:
-  group: pages
-  cancel-in-progress: true
+  group: pages-${{ github.ref }}
+  # En PRs se cancela la compilación anterior; una publicación en curso nunca se corta.
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 jobs:
   build:
@@ -25,11 +29,13 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npm run build
-      - uses: actions/upload-pages-artifact@v3
+      - if: github.event_name != 'pull_request'
+        uses: actions/upload-pages-artifact@v3
         with:
           path: dist
 
   deploy:
+    if: github.event_name != 'pull_request'
     needs: build
     runs-on: ubuntu-latest
     environment:
