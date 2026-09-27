@@ -1,0 +1,208 @@
+/* Estética retro de los 90: paleta VGA, ventanas biseladas, texto pixelado. */
+:root {
+  --rojo-carmen: #d6202b;
+  --rojo-oscuro: #8a0e16;
+  --ambar: #ffb000;
+  --azul-vga: #0000aa;
+  --gris-marco: #c0c0c0;
+  --gris-claro: #ffffff;
+  --gris-sombra: #555555;
+  --negro: #000000;
+  --texto: #ffffff;
+  --fuente-pixel: 'Press Start 2P', monospace;
+  --fuente-lectura: 'Trebuchet MS', 'Verdana', system-ui, sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  height: 100%;
+  overflow: hidden;
+  background: var(--negro);
+  color: var(--texto);
+  font-family: var(--fuente-lectura);
+}
+
+#scene {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+#ui {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  pointer-events: none;
+}
+
+#ui > * {
+  pointer-events: auto;
+}
+
+/* Efecto CRT suave y desactivable (clase en <body>). */
+body.crt::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  background: repeating-linear-gradient(to bottom, rgba(0, 0, 0, 0.14) 0 2px, transparent 2px 4px);
+}
+
+/* Ventana biselada estilo VGA. */
+.ventana {
+  width: min(560px, 100%);
+  background: var(--azul-vga);
+  border: 4px solid;
+  border-color: var(--gris-claro) var(--gris-sombra) var(--gris-sombra) var(--gris-claro);
+  box-shadow: 0 0 0 4px var(--negro), 8px 8px 0 4px rgba(0, 0, 0, 0.5);
+  padding: 20px;
+  text-align: center;
+}
+
+.titulo {
+  font-family: var(--fuente-pixel);
+  font-size: clamp(16px, 4.5vw, 28px);
+  line-height: 1.5;
+  color: var(--rojo-carmen);
+  text-shadow: 3px 3px 0 var(--negro), -1px -1px 0 var(--gris-claro);
+  margin: 0 0 8px;
+}
+
+.subtitulo {
+  font-family: var(--fuente-pixel);
+  font-size: clamp(10px, 2.6vw, 14px);
+  color: var(--ambar);
+  line-height: 1.6;
+  margin: 0 0 20px;
+}
+
+.texto {
+  font-size: clamp(18px, 4vw, 22px);
+  line-height: 1.4;
+  margin: 0 0 20px;
+}
+
+.botones {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  justify-content: center;
+}
+
+/* Botones grandes para dedos pequeños (≥ 64 px). */
+.boton {
+  min-height: 64px;
+  min-width: 180px;
+  padding: 12px 20px;
+  font-family: var(--fuente-pixel);
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--gris-claro);
+  background: var(--rojo-carmen);
+  border: 4px solid;
+  border-color: #ff6b73 var(--rojo-oscuro) var(--rojo-oscuro) #ff6b73;
+  cursor: pointer;
+}
+
+.boton:hover,
+.boton:focus-visible {
+  background: #ee3340;
+  outline: 3px solid var(--ambar);
+  outline-offset: 2px;
+}
+
+.boton:active {
+  border-color: var(--rojo-oscuro) #ff6b73 #ff6b73 var(--rojo-oscuro);
+}
+
+.boton small {
+  display: block;
+  font-family: var(--fuente-lectura);
+  font-size: 14px;
+  margin-top: 4px;
+}
+
+/* Diálogo con retrato (Player habla por los aretes). */
+.dialogo {
+  position: fixed;
+  left: 16px;
+  right: 16px;
+  bottom: 48px;
+  margin: 0 auto;
+  width: min(720px, calc(100% - 32px));
+  display: flex;
+  gap: 16px;
+  align-items: center;
+  text-align: left;
+}
+
+.retrato {
+  flex: 0 0 auto;
+  width: 88px;
+  height: 88px;
+  image-rendering: pixelated;
+  border: 4px solid var(--gris-marco);
+  background: var(--negro);
+}
+
+.dialogo .nombre {
+  font-family: var(--fuente-pixel);
+  font-size: 12px;
+  color: var(--ambar);
+  margin: 0 0 8px;
+}
+
+.dialogo .texto {
+  margin: 0 0 12px;
+}
+
+.dialogo .botones {
+  justify-content: flex-start;
+}
+
+.dialogo .boton {
+  min-width: 64px;
+}
+
+.boton.icono {
+  font-family: var(--fuente-lectura);
+  font-size: 28px;
+}
+
+.aviso-fan {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 4px;
+  text-align: center;
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.7);
+  text-shadow: 1px 1px 0 var(--negro);
+  pointer-events: none;
+}
+
+@media (max-width: 480px) {
+  .dialogo {
+    flex-direction: column;
+    text-align: center;
+  }
+  .dialogo .botones {
+    justify-content: center;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  body.crt::after {
+    display: none;
+  }
+}

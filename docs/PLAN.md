@@ -5,133 +5,142 @@ está en [`INVESTIGACION.md`](./INVESTIGACION.md).
 
 ## 1. Contexto y objetivo
 
-- El repositorio está vacío (solo `README.md`). Construimos desde cero.
-- Queremos un **juego 3D en el navegador** donde el jugador controla a **Carmen Sandiego**
-  en un mundo navegable, con movimiento libre y misiones al estilo **Roblox**, con la
-  **presentación retro** del juego clásico de los 90 y el **argumento de la serie de Netflix**.
-- Se publica como **sitio estático en GitHub Pages**: sin servidor, todo corre en el cliente.
+- Queremos un **juego 3D en el navegador** donde se controla a **Carmen Sandiego** en un mundo
+  navegable, con movimiento libre y misiones al estilo **Roblox**, la **presentación retro** del
+  juego clásico de los 90 y el **argumento de la serie de Netflix**.
+- Se publica como **sitio estático en GitHub Pages** (repo público): sin servidor, todo en el cliente.
 
-## 2. Concepto de juego
+## 2. Decisiones tomadas
 
-**Premisa (serie Netflix, invertida respecto al clásico):** Carmen ("Black Sheep") roba a
-V.I.L.E. para devolver lo robado. Player la guía por los aretes comunicadores. ACME (Chase
-Devineaux, Julia Argent) la persigue creyendo que es la villana.
+| Tema | Decisión | Consecuencias en el diseño |
+|------|----------|----------------------------|
+| Público | **Niñas y niños de 6 a 9 años** | Frases cortas, todo narrado en voz alta, pistas con imágenes, sin castigos duros, sin violencia. |
+| Idioma | **Español latinoamericano** | Tuteo ("tú", "ustedes", nunca "vosotros"); vocabulario latino: *computadora, celular, auto, lentes*. Voz sintetizada `es-419` / `es-MX` / `es-CL` según disponibilidad. |
+| Enfoque | **Educación + acción** | Cada misión enseña geografía y cultura (el espíritu del original de 1985) y se juega moviéndose, trepando y usando gadgets. |
+| Publicación | **Repo público → GitHub Pages** | Deploy automático con GitHub Actions. |
 
-**Bucle de una misión ("Caper")** — mezcla del clásico de 1985 y el mundo libre de Roblox:
+### 2.1 Reglas por edad (6–9 años)
 
-1. **Briefing retro** (pantalla VGA): Player anuncia el golpe de V.I.L.E. y el tesoro en riesgo.
-2. **Exploración libre** de un distrito 3D de estilo bloques (la ciudad del caper).
-3. **Pistas**: hablar con NPC testigos (diálogos con guiño a 1985: "Cambió su dinero por
-   rupias…"), escanear con **binoculares**, **hackear** terminales con el **labial**.
-4. **Crime Net**: pantalla de computadora ámbar donde se cruzan los rasgos del operativo
-   (pelo, pasatiempo, rasgo, vehículo) para identificarlo → sin identificación, no hay "tag"
-   de ubicación y el operativo huye (versión Netflix de la **orden de arresto**).
-5. **Deducir la siguiente ciudad** por pistas geográficas (valor educativo del original) y
-   "volar" con Zack en el mapamundi retro.
-6. **Enfrentamiento**: persecución por azoteas con **gancho** y **planeador**, combate no letal
-   contra el operativo (Tigress, Le Chèvre, El Topo…), robar el botín antes que V.I.L.E.
-7. **Cierre**: el botín se deja para ACME con la tarjeta roja de Carmen. Chase llega tarde
-   (gag). Se sube de **rango** con títulos del clásico (Rookie → Sleuth → Private Eye →
-   Investigator → Ace Detective → …) reinterpretados como rangos del "Equipo Red".
+- **Dos niveles de dificultad** al inicio:
+  - **Aprendiz (6–7):** 2 opciones por decisión, pistas 100 % con imagen + voz, sin reloj.
+  - **Detective (8–9):** 3 opciones, pistas con texto breve + imagen, reloj suave (solo afecta las estrellas obtenidas, nunca hace perder la misión).
+- **Todo diálogo se narra** con la Web Speech API (botón 🔊 para repetir). Máximo ~15 palabras por globo.
+- **Nunca se pierde del todo**: si eliges mal, Player da una pista extra ("¡Uy! Aquí nadie vio nada. Recuerda: buscamos un país con canguros 🦘").
+- **Acción no violenta**: Carmen no pelea a golpes. Atrapa a los operativos con **trampas y
+  habilidad** (alcanzarlos en una persecución, esquivar, activar una red, encerrar con una reja
+  hackeada). Los villanos son cómicos, no aterradores.
+- **Contenido de la serie que se omite**: muerte del padre de Carmen, venenos (Lady Dokuso),
+  borrado de memoria, la faceta psicópata de Paperstar (queda como "la de las estrellas de papel").
+- **Privacidad infantil**: sin cuentas, sin chat, sin anuncios, sin analítica ni cookies de
+  terceros. El progreso se guarda solo en `localStorage` del dispositivo.
+- **Accesibilidad**: botones grandes (≥ 64 px en táctil), alto contraste, texto grande,
+  opción para reducir el efecto CRT/parpadeos, controles simples (un botón = un gadget).
 
-**Reloj**: cada caper tiene un plazo (horas de juego). Viajar a la ciudad equivocada cuesta
-tiempo y los testigos "no vieron nada sospechoso", como en 1985.
+## 3. Concepto de juego
 
-## 3. Movimiento y gadgets (MVP → posteriores)
+**Premisa:** Carmen ("Black Sheep") le roba a V.I.L.E. para devolver los tesoros a sus
+dueños. **Player** la guía por los aretes comunicadores; **Zack e Ivy** la llevan en su auto y su
+avión. **Chase Devineaux** (ACME) la persigue y siempre llega tarde (gag recurrente).
 
-| Prioridad | Gadget / acción | Mecánica |
-|-----------|-----------------|----------|
-| MVP | Correr, saltar, trepar bordes | Controlador en 3ª persona tipo Roblox (WASD + ratón / joystick táctil). |
-| MVP | **Gancho de muñeca** | Apuntar a puntos de anclaje resaltados; tirón rápido o balanceo (restricción tipo cuerda). |
-| MVP | **Labial hacker** | Interactuar con terminales → minijuego retro (secuencia/cables estilo 8 bits). |
-| MVP | **Aretes comunicadores** | Canal de diálogo de Player en el HUD. |
-| v2 | **Planeador** | Planeo con descenso lento desde altura. |
-| v2 | **Binoculares** | Modo escaneo: resalta pistas y anclajes. |
-| v2 | **Cortador láser** | Abrir vitrinas y rejas. |
-| v3 | **Dron rojo**, **espejo rastreador** | Exploración remota; seguir a un enemigo marcado. |
-| v3 | Artes marciales no letales | Aturdir; esquivar. |
+**Bucle de una misión ("Caso")**, adaptado del clásico de 1985:
 
-## 4. Contenido por fases
+1. **Aviso retro** (pantalla VGA): Player cuenta qué quiere robar V.I.L.E. ("¡Le Chèvre va tras el Gato de la Suerte de oro!").
+2. **Exploración libre** del barrio 3D de la ciudad (estilo bloques).
+3. **Buscar pistas** (3 por ciudad): hablar con testigos, mirar con **binoculares**, **hackear** una computadora con el **labial**.
+   - *Pista de destino* con imagen: bandera, animal, comida, monumento, moneda, idioma ("Dijo *¡Che!* y pidió un mate 🧉").
+   - *Pista del sospechoso* con imagen: color de pelo, gadget, pasatiempo.
+4. **Crime Net** (pantalla ámbar): elegir con íconos los rasgos hasta que quede un solo operativo → "¡Operativo identificado!" (la *orden de arresto* del original).
+5. **Mapamundi**: elegir entre 2–3 destinos con foto y bandera; Zack "vuela" con una línea punteada retro.
+6. **Final de acción**: persecución por azoteas con **gancho** (y **planeador** en v2), llegar antes que el operativo y activar la trampa.
+7. **Cierre**: el tesoro se devuelve con la tarjeta roja de Carmen; Chase llega tarde. Se gana:
+   - **Estrellas** (1–3), **una carta del Álbum de Ciudades** (datos curiosos, bandera, mapa) y
+   - **ascenso de rango** (guiño a 1985): *Novata/o → Aprendiz → Investigador/a → Agente Especial → Detective Estrella*.
 
-- **MVP (1 caper jugable):** *"El caso del gato de la suerte"* inspirado en San Francisco
-  (Chinatown, azoteas, puente) contra **Le Chèvre** y **El Topo**. Incluye tutorial en la
-  **Isla de V.I.L.E.** (prólogo: la huida de Black Sheep, enseña movimiento y gancho).
-- **v2:** 3 capers más (París, Río de Janeiro, Tokio/Matsumoto) + 1 archivo "clásico" con
-  un villano de nombre con juego de palabras.
-- **v3:** jefes de la Facultad (Coach Brunt, Condesa Cleo, Dra. Bellum, Maelstrom),
-  Buenos Aires / Ciudad de México, persecución de ACME en tiempo real.
+## 4. Movimiento y gadgets
 
-## 5. Estilo visual y audio
+| Prioridad | Gadget / acción | Mecánica (simplificada para niños) |
+|-----------|-----------------|------------------------------------|
+| MVP | Correr, saltar | 3ª persona tipo Roblox: WASD/flechas + ratón; joystick y botón de salto en táctil. |
+| MVP | **Gancho de muñeca** | Los puntos de anclaje brillan en rojo; un botón engancha el más cercano a la vista y tira a Carmen hacia él (apuntado automático). |
+| MVP | **Labial hacker** | Acércate a una computadora → minijuego corto (unir colores / repetir secuencia, estilo 8 bits). |
+| MVP | **Aretes comunicadores** | Globo de Player con voz en el HUD. |
+| v2 | **Planeador** | Mantener salto en el aire → planea despacio. |
+| v2 | **Binoculares** | Modo mirar: resalta pistas y anclajes. |
+| v2 | **Cortador láser** | Abrir vitrinas trazando una figura (enseña formas geométricas). |
+| v3 | **Dron rojo**, **espejo rastreador** | Explorar desde arriba; seguir a un operativo marcado. |
 
-- **3D estilo Roblox**: personajes de bloques (cabeza, torso, brazos, piernas como cajas con
-  texturas simples), ciudades con primitivas y bajo polígono. Carmen: gabardina y sombrero
-  rojos; cada operativo reconocible por silueta y color.
-- **Capa retro 90s** en la UI: fuente pixelada, paleta VGA, ventanas biseladas, retratos
-  pixel art en los diálogos, mapamundi con líneas de vuelo punteadas, pantalla Crime Net
-  ámbar, efecto CRT opcional.
-- **Audio**: jingles chiptune originales generados con Web Audio (sin música con copyright).
-- Todo el arte se crea desde cero (IP: proyecto de fan, aviso en el pie del sitio).
+## 5. Contenido por fases
 
-## 6. Arquitectura técnica
+- **MVP**
+  - **Prólogo – Isla de V.I.L.E.**: Black Sheep escapa de la escuela. Tutorial de correr, saltar, gancho y labial. Coach Brunt como "entrenadora" cómica.
+  - **Caso 1 – "El caso del Gato de la Suerte"**: San Francisco → pistas llevan a **Ciudad de México** → final en **Buenos Aires**. Operativo: **Le Chèvre** (parkour).
+- **v2**
+  - **Caso 2 – "El caso de las piedras de Río"**: Río de Janeiro, Quito. Operativo: **El Topo**.
+  - **Caso 3 – "El caso del Moái"** (original, no está en la serie): **Santiago de Chile**, Isla de Pascua (Rapa Nui). Operativo: **Tigress**.
+  - **Caso 4 – París / Casablanca**. Operativo: **Paperstar**.
+  - Álbum de Ciudades completo; planeador y binoculares.
+- **v3**
+  - Asia y Oceanía (Tokio, Sídney, Bombay), jefes de la Facultad en versión cómica (Condesa Cleo, Dra. Bellum), persecución de ACME en tiempo real.
+
+**Prioridad latinoamericana**: al menos la mitad de las ciudades del juego son de Latinoamérica.
+
+## 6. Estilo visual y audio
+
+- **3D estilo Roblox**: personajes de bloques (cajas con texturas simples), ciudades con primitivas de bajo polígono y colores vivos. Carmen: gabardina y sombrero rojos; cada operativo reconocible por silueta y color.
+- **Capa retro 90s** en la interfaz: fuente pixelada, paleta VGA, ventanas biseladas, retratos pixel art, mapamundi con líneas punteadas, Crime Net ámbar, efecto CRT suave y desactivable.
+- **Audio**: jingles chiptune originales generados con Web Audio; voz con Web Speech API.
+- Arte y música originales (proyecto de fan; aviso visible en el pie del sitio).
+
+## 7. Arquitectura técnica
 
 | Tema | Decisión |
 |------|----------|
-| Build | **Vite + TypeScript** (salida estática en `dist/`). |
-| 3D | **Three.js**. Modelos por código (cajas) al principio; luego glTF hechos en Blockbench. |
-| Física | **Rapier** (`@dimforge/rapier3d-compat`, WASM embebido) para controlador de personaje, colisiones y la cuerda del gancho. |
-| UI retro | DOM + CSS superpuesto al canvas (diálogos, Crime Net, mapa, menús). |
-| Contenido | **Data-driven**: capers, ciudades, pistas, NPC y operativos en JSON bajo `src/data/`, para que agregar misiones no requiera código. |
-| Estado | Máquina de estados simple (Menú → Briefing → Exploración → CrimeNet → Mapa → Jefe → Resultado). Progreso en `localStorage`. |
-| Idioma | Español primero; textos en `src/i18n/es.json` para poder sumar inglés. |
-| Controles | Teclado/ratón y táctil (joystick virtual) para que funcione en celular. |
-| Deploy | **GitHub Actions** → GitHub Pages (`actions/deploy-pages`). `base` de Vite = `/ks-apprender-carmen-sandiego/`. |
+| Build | **Vite + TypeScript**, salida estática en `dist/`. |
+| 3D | **Three.js**. Modelos por código (cajas) al inicio; luego glTF hechos en Blockbench. |
+| Física | Colisiones propias contra cajas (AABB) para el MVP — el mundo es de bloques y así el gancho y el salto son predecibles. Se evalúa **Rapier** si aparecen necesidades de física más complejas. |
+| UI retro | DOM + CSS sobre el canvas (diálogos, Crime Net, mapa, menús). |
+| Contenido | **Data-driven**: casos, ciudades, pistas y operativos en `src/data/*.ts` tipados, para sumar misiones sin tocar el motor. |
+| Estado | Máquina de estados: Menú → Aviso → Exploración → Crime Net → Mapa → Final → Resultado. |
+| Voz | `speechSynthesis` con preferencia `es-419`, luego cualquier `es-*`. |
+| Deploy | GitHub Actions (`actions/deploy-pages`), `base` de Vite = `/ks-apprender-carmen-sandiego/`. |
 
-### Estructura propuesta
+### Estructura
 
 ```
 index.html
 vite.config.ts
 .github/workflows/deploy.yml
-public/            fuentes pixel, texturas, sonidos
+public/            texturas, sonidos
 src/
-  main.ts          arranque, loop
-  core/            estados del juego, input, audio, guardado
-  world/           generación de distritos, cámara, iluminación
-  player/          controlador de Carmen, animación de bloques
-  gadgets/         grapple.ts, lipstick.ts, glider.ts, binoculars.ts …
-  npc/             testigos, operativos V.I.L.E., agentes ACME
-  missions/        motor de capers, pistas, reloj, Crime Net
-  ui/              diálogos, HUD, mapamundi, pantalla Crime Net (CSS retro)
-  data/            capers/*.json, cities.json, suspects.json
-  i18n/es.json
+  main.ts          arranque y loop
+  core/            estados, input (teclado + táctil), audio, voz, guardado
+  world/           construcción de barrios, cámara, iluminación, colisiones
+  player/          Carmen de bloques y su controlador
+  gadgets/         grapple.ts, lipstick.ts, glider.ts …
+  npc/             testigos, operativos V.I.L.E., Chase Devineaux
+  missions/        motor de casos, pistas, Crime Net, estrellas
+  ui/              diálogos, HUD, mapamundi, Crime Net (CSS retro)
+  data/            casos, ciudades, operativos
 docs/              PLAN.md, INVESTIGACION.md
 ```
 
-## 7. Hitos de implementación
+## 8. Hitos
 
-1. **Esqueleto**: Vite + TS + Three.js, escena con suelo, deploy a Pages funcionando.
-2. **Carmen jugable**: personaje de bloques, cámara 3ª persona, correr/saltar con Rapier, controles táctiles.
-3. **Gancho**: puntos de anclaje, raycast, tirón y balanceo.
-4. **UI retro**: diálogos con retrato, HUD de Player, fuente pixel, efecto CRT.
-5. **Motor de capers**: carga JSON, testigos, pistas, reloj, Crime Net, mapamundi de viaje.
-6. **Labial hacker**: minijuego en terminales.
-7. **Prólogo Isla de V.I.L.E. + caper San Francisco** completos; enfrentamiento con Le Chèvre.
-8. **Pulido**: audio chiptune, guardado, pantalla de rangos, aviso de fan, README.
-9. **v2/v3**: planeador, binoculares, láser, nuevas ciudades y jefes.
+1. **Esqueleto**: Vite + TS + Three.js, pantalla de título retro, escena 3D, deploy a Pages. ✅ *(este paso)*
+2. **Carmen jugable**: personaje de bloques, cámara 3ª persona, correr/saltar, colisiones, controles táctiles.
+3. **Gancho** con apuntado automático.
+4. **UI retro + voz**: diálogos con retrato, narración, selector de dificultad.
+5. **Motor de casos**: testigos, pistas con imagen, Crime Net, mapamundi, estrellas y rango.
+6. **Labial hacker**: minijuego.
+7. **Prólogo + Caso 1** completos.
+8. **Pulido**: audio, guardado, Álbum de Ciudades, aviso de fan.
+9. **v2 / v3**.
 
-## 8. Verificación
+## 9. Verificación
 
-- `npm run dev` y probar en navegador de escritorio y en emulación móvil.
+- `npm run dev` en escritorio y emulación móvil.
 - `npm run build && npm run preview` para validar rutas con el `base` de Pages.
-- Pruebas unitarias (Vitest) del motor de capers: pistas coherentes, destino correcto,
-  identificación en Crime Net, reloj.
-- Prueba e2e con Playwright (Chromium preinstalado): cargar la página, iniciar el tutorial,
-  mover a Carmen, completar un diálogo.
-- Tras el push, verificar que el workflow de Pages publique y que el sitio cargue.
-
-## 9. Preguntas abiertas
-
-- ¿Público objetivo y edad? (afecta dificultad de pistas geográficas y combate).
-- ¿Solo español o bilingüe desde el inicio?
-- ¿Prioridad al componente educativo (geografía, como el original) o a la acción/plataformas?
-- ¿Se hará el repositorio público para GitHub Pages (Pages gratuito requiere repo público)?
+- Vitest para el motor de casos (pistas coherentes, destino correcto, Crime Net).
+- Playwright (Chromium preinstalado): cargar la página, iniciar el juego, mover a Carmen.
+- Tras el merge a `main`, comprobar que el workflow publique y el sitio cargue.
+- Prueba con niñas y niños reales de 6 y 9 años en cada hito jugable.
