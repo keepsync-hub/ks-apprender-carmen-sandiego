@@ -126,8 +126,8 @@ docs/              PLAN.md, INVESTIGACION.md
 
 ## 8. Hitos
 
-1. **Esqueleto**: Vite + TS + Three.js, pantalla de título retro, escena 3D, deploy a Pages. ✅ *(este paso)*
-2. **Carmen jugable**: personaje de bloques, cámara 3ª persona, correr/saltar, colisiones, controles táctiles.
+1. **Esqueleto**: Vite + TS + Three.js, pantalla de título retro, escena 3D, deploy a Pages. ✅
+2. **Carmen jugable**: personaje de bloques, cámara 3ª persona, correr/saltar, colisiones, controles táctiles. ✅
 3. **Gancho** con apuntado automático.
 4. **UI retro + voz**: diálogos con retrato, narración, selector de dificultad.
 5. **Motor de casos**: testigos, pistas con imagen, Crime Net, mapamundi, estrellas y rango.

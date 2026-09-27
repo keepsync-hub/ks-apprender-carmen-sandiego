@@ -1,6 +1,6 @@
 name: Publicar en GitHub Pages
 
-# En cada PR: compila y verifica que el juego se construye sin errores.
+# En cada PR: corre las pruebas y compila el juego.
 # Al hacer merge (push) a main: compila y publica el sitio.
 on:
   pull_request:
@@ -28,6 +28,7 @@ jobs:
           node-version: 22
           cache: npm
       - run: npm ci
+      - run: npm test
       - run: npm run build
       - if: github.event_name != 'pull_request'
         uses: actions/upload-pages-artifact@v3

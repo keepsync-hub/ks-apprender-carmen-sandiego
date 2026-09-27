@@ -191,6 +191,11 @@ body.crt::after {
   pointer-events: none;
 }
 
+/* Mientras se juega, el aviso no debe tapar los controles. */
+body.jugando .aviso-fan {
+  display: none;
+}
+
 @media (max-width: 480px) {
   .dialogo {
     flex-direction: column;
@@ -205,4 +210,77 @@ body.crt::after {
   body.crt::after {
     display: none;
   }
+}
+
+/* Aviso breve de Player que no detiene el juego. */
+.aviso-player {
+  position: fixed;
+  top: 16px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: min(560px, calc(100% - 32px));
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  padding: 12px;
+  text-align: left;
+  pointer-events: none;
+}
+
+.aviso-player .retrato {
+  width: 56px;
+  height: 56px;
+}
+
+.aviso-player .texto {
+  margin: 0;
+  font-size: clamp(16px, 3.6vw, 20px);
+}
+
+/* Controles táctiles: joystick a la izquierda, salto a la derecha. */
+.controles-tactiles {
+  position: fixed;
+  inset: auto 0 32px 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  padding: 0 24px;
+  pointer-events: none;
+}
+
+.controles-tactiles[hidden] {
+  display: none;
+}
+
+.joystick {
+  width: 140px;
+  height: 140px;
+  border-radius: 50%;
+  background: rgba(0, 0, 170, 0.45);
+  border: 4px solid var(--gris-marco);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  touch-action: none;
+  pointer-events: auto;
+}
+
+.palanca {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background: var(--rojo-carmen);
+  border: 4px solid var(--gris-claro);
+}
+
+.boton-salto {
+  min-width: 110px;
+  min-height: 110px;
+  border-radius: 50%;
+  touch-action: none;
+  pointer-events: auto;
+}
+
+#scene {
+  touch-action: none;
 }

@@ -1,7 +1,6 @@
 import * as THREE from 'three';
 
-// Barrio de azoteas de bloques. Por ahora es decorado para la pantalla de título;
-// en el hito 2 se convierte en el primer mapa jugable.
+// Barrio de azoteas de bloques: el primer mapa jugable.
 
 const COLORES_EDIFICIO = [0xf2c14e, 0x5b8e7d, 0xf78154, 0x4d9de0, 0xe15554, 0x7768ae, 0x3bb273];
 
@@ -18,14 +17,21 @@ export interface Ciudad {
   grupo: THREE.Group;
   /** Puntos rojos donde se puede enganchar el gancho de Carmen. */
   anclajes: THREE.Mesh[];
-  /** Altura de la azotea donde está parada Carmen. */
-  alturaInicio: number;
+  /** Cajas contra las que choca Carmen (suelo, edificios, postes). */
+  solidos: THREE.Box3[];
+  /** Punto de partida de Carmen: el centro de una azotea. */
+  inicio: THREE.Vector3;
   animar(tiempo: number): void;
 }
 
 export function crearCiudad(): Ciudad {
   const grupo = new THREE.Group();
   const anclajes: THREE.Mesh[] = [];
+  const solidos: THREE.Box3[] = [];
+  const agregarSolido = (malla: THREE.Mesh) => {
+    malla.updateMatrixWorld();
+    solidos.push(new THREE.Box3().setFromObject(malla));
+  };
   const r = azar(1985);
 
   const suelo = new THREE.Mesh(
@@ -35,6 +41,7 @@ export function crearCiudad(): Ciudad {
   suelo.position.y = -0.5;
   suelo.receiveShadow = true;
   grupo.add(suelo);
+  agregarSolido(suelo);
 
   const materialVentana = new THREE.MeshBasicMaterial({ color: 0xfff3b0 });
   const geoAnclaje = new THREE.OctahedronGeometry(0.4);
@@ -59,6 +66,7 @@ export function crearCiudad(): Ciudad {
       edificio.castShadow = true;
       edificio.receiveShadow = true;
       grupo.add(edificio);
+      agregarSolido(edificio);
 
       // Ventanas como pequeños bloques luminosos en la fachada frontal.
       for (let piso = 2; piso < alto - 1; piso += 2.5) {
@@ -80,6 +88,7 @@ export function crearCiudad(): Ciudad {
         const anclaje = new THREE.Mesh(geoAnclaje, matAnclaje);
         anclaje.position.set(x * 8, alto + 2.4, z * 8);
         grupo.add(poste, anclaje);
+        agregarSolido(poste);
         anclajes.push(anclaje);
       }
     }
@@ -88,7 +97,8 @@ export function crearCiudad(): Ciudad {
   return {
     grupo,
     anclajes,
-    alturaInicio,
+    solidos,
+    inicio: new THREE.Vector3(8, alturaInicio, 8),
     animar(tiempo) {
       for (const [i, a] of anclajes.entries()) {
         a.rotation.y = tiempo * 2 + i;

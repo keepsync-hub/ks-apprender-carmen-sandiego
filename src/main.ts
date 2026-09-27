@@ -1,9 +1,17 @@
 import '@fontsource/press-start-2p/400.css';
 import './style.css';
 import * as THREE from 'three';
+import { crearEntrada, esTactil } from './core/entrada';
 import { cargarProgreso, guardarProgreso } from './core/guardado';
 import { crearCarmen } from './player/carmen';
-import { dialogo, elegirDificultad, mostrarAvisoFan, mostrarTitulo } from './ui/pantallas';
+import { crearControlador } from './player/controlador';
+import {
+  avisoPlayer,
+  dialogo,
+  elegirDificultad,
+  mostrarAvisoFan,
+  mostrarTitulo,
+} from './ui/pantallas';
 import { crearCiudad } from './world/ciudad';
 
 const lienzo = document.getElementById('scene') as HTMLCanvasElement;
@@ -29,8 +37,14 @@ const ciudad = crearCiudad();
 escena.add(ciudad.grupo);
 
 const carmen = crearCarmen();
-carmen.modelo.position.set(8, ciudad.alturaInicio, 8);
+carmen.modelo.position.copy(ciudad.inicio);
 escena.add(carmen.modelo);
+
+const entrada = crearEntrada(lienzo);
+const controlador = crearControlador(carmen, camara, entrada, ciudad.solidos, ciudad.inicio);
+controlador.alCaer = () => avisoPlayer('¡Uy! Te llevo de vuelta a la azotea.');
+
+let jugando = false;
 
 function ajustarTamano(): void {
   const { innerWidth: ancho, innerHeight: alto } = window;
@@ -43,12 +57,18 @@ ajustarTamano();
 
 const reloj = new THREE.Clock();
 renderer.setAnimationLoop(() => {
-  const t = reloj.getElapsedTime();
-  // Cámara orbitando a Carmen, como en la intro de un caso.
-  const foco = carmen.modelo.position;
-  camara.position.set(foco.x + Math.sin(t * 0.2) * 9, foco.y + 4.5, foco.z + Math.cos(t * 0.2) * 9);
-  camara.lookAt(foco.x, foco.y + 2.2, foco.z);
-  carmen.animar(t, 0);
+  const dt = reloj.getDelta();
+  const t = reloj.elapsedTime;
+  if (jugando) {
+    controlador.actualizar(dt, t);
+  } else {
+    // Cámara orbitando a Carmen, como en la intro de un caso.
+    const foco = carmen.modelo.position;
+    camara.position.set(foco.x + Math.sin(t * 0.2) * 9, foco.y + 4.5, foco.z + Math.cos(t * 0.2) * 9);
+    camara.lookAt(foco.x, foco.y + 2.2, foco.z);
+    carmen.animar(t, 0);
+  }
+  entrada.finCuadro();
   ciudad.animar(t);
   renderer.render(escena, camara);
 });
@@ -64,9 +84,21 @@ function bienvenida(): void {
       { quien: 'player', texto: '¡Hola, Red! Soy Player. Te hablo por tus aretes.' },
       { quien: 'player', texto: 'V.I.L.E. quiere robar un tesoro muy valioso.' },
       { quien: 'carmen', texto: 'Entonces se lo quitaremos y lo devolveremos a su dueño.' },
-      { quien: 'player', texto: '¡Muy pronto podrás correr y usar tu gancho! Sigue atenta.' },
+      { quien: 'player', texto: 'Primero, a entrenar. ¡Corre y salta por las azoteas!' },
     ],
-    () => mostrarTitulo(empezar),
+    jugar,
+  );
+}
+
+function jugar(): void {
+  jugando = true;
+  document.body.classList.add('jugando');
+  entrada.activar(true);
+  avisoPlayer(
+    esTactil()
+      ? 'Usa el círculo para caminar y el botón para saltar. Desliza el dedo para mirar.'
+      : 'Camina con las flechas y salta con espacio. Arrastra el mouse para mirar.',
+    7,
   );
 }
 

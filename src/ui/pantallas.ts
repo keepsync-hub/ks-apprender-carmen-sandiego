@@ -92,6 +92,19 @@ export function dialogo(lineas: Linea[], alTerminar: () => void): void {
   mostrar();
 }
 
+let temporizadorAviso = 0;
+
+/** Mensaje corto de Player arriba de la pantalla; no detiene el juego. */
+export function avisoPlayer(texto: string, segundos = 4): void {
+  document.querySelector('.aviso-player')?.remove();
+  window.clearTimeout(temporizadorAviso);
+  const caja = elemento('div', 'ventana aviso-player');
+  caja.append(dibujarRetrato('player'), elemento('p', 'texto', texto));
+  document.body.append(caja);
+  hablar(texto);
+  temporizadorAviso = window.setTimeout(() => caja.remove(), segundos * 1000);
+}
+
 export function mostrarAvisoFan(): void {
   const aviso = elemento(
     'p',
