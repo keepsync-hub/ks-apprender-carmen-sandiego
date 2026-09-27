@@ -117,7 +117,7 @@ export function crearCiudad(tema: TemaCiudad = TEMA_ENTRENAMIENTO, semilla = 198
     }
   }
 
-  construirHito(tema.hito, bloque);
+  construirHito(tema.hito, bloque, grupo);
   azoteas.sort((a, b) => a.centro.distanceTo(inicio) - b.centro.distanceTo(inicio));
 
   return {
@@ -154,7 +154,7 @@ type Bloque = (
 ) => THREE.Mesh;
 
 /** Hitos en las calles del borde (x = -24), donde no hay edificios. */
-function construirHito(hito: TemaCiudad['hito'], bloque: Bloque): void {
+function construirHito(hito: TemaCiudad['hito'], bloque: Bloque, grupo: THREE.Group): void {
   if (hito === 'puente') {
     // Puente rojo al estilo Golden Gate: dos torres y un tablero por el que se puede caminar.
     const rojo = 0xc0362c;
@@ -171,6 +171,33 @@ function construirHito(hito: TemaCiudad['hito'], bloque: Bloque): void {
       const lado = 8 - i * 1.6;
       bloque(lado, 1.6, lado, color, -24, 0.8 + i * 1.6, -24);
     });
+  } else if (hito === 'cristo') {
+    // Cristo Redentor con los brazos abiertos sobre un cerro verde.
+    const blanco = 0xf2f2f2;
+    bloque(7, 6, 7, 0x3b7d3a, -24, 3, -24);
+    bloque(5, 4, 5, 0x2e6b2e, -24, 8, -24);
+    bloque(1.6, 2, 1.6, 0xcfcfcf, -24, 11, -24);
+    bloque(1.2, 5, 1.2, blanco, -24, 14.5, -24);
+    bloque(6, 0.8, 0.8, blanco, -24, 16, -24);
+    bloque(0.8, 0.8, 0.8, blanco, -24, 17.4, -24);
+  } else if (hito === 'mitad-del-mundo') {
+    // Monumento a la Mitad del Mundo: torre de piedra con un globo terráqueo, y la
+    // línea del ecuador pintada de amarillo a lo largo de la calle.
+    bloque(5, 1, 5, 0x9c8a66, -24, 0.5, -24);
+    bloque(3.2, 13, 3.2, 0xb9a37e, -24, 7.5, -24);
+    const globo = new THREE.Mesh(
+      new THREE.SphereGeometry(2, 16, 12),
+      new THREE.MeshLambertMaterial({ color: 0x3b7dd8, flatShading: true }),
+    );
+    globo.position.set(-24, 16, -24);
+    globo.castShadow = true;
+    grupo.add(globo);
+    const linea = new THREE.Mesh(
+      new THREE.BoxGeometry(90, 0.06, 0.5),
+      new THREE.MeshBasicMaterial({ color: 0xffd23f }),
+    );
+    linea.position.set(0, 0.03, -24);
+    grupo.add(linea);
   } else if (hito === 'obelisco') {
     const blanco = 0xf2f2f2;
     bloque(2, 26, 2, blanco, -24, 13, -24);

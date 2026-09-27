@@ -30,7 +30,7 @@ export interface Mundo {
   bloquear(bloqueado: boolean): void;
   nivel: () => Dificultad;
   /** Se llama al resolver el caso con las estrellas; devuelve casos resueltos antes y después. */
-  alResolver(estrellas: number): { antes: number; despues: number };
+  alResolver(casoId: string, estrellas: number): { antes: number; despues: number };
   alSalir(): void;
 }
 
@@ -38,6 +38,8 @@ const DISTANCIA_HABLAR = 2.6;
 const DISTANCIA_HUIDA = 7;
 const DISTANCIA_ATRAPAR = 2.8;
 const DURACION_SALTO_LADRON = 1.1;
+/** Qué tan hondo se hunde El Topo en el techo al cavar. */
+const PROFUNDIDAD_TUNEL = 4.5;
 
 interface TestigoEnMundo {
   personaje: Personaje;
@@ -128,7 +130,7 @@ export function iniciarPartida(caso: Caso, mundo: Mundo): Partida {
     etapaLadron = 0;
     salto = null;
     rutaLadron = rutaDeHuida(c);
-    ladron = crearPersonaje({ ropa: op.color, accesorio: caso.ladron === 'le-chevre' ? 'cuernos' : 'ninguno' });
+    ladron = crearPersonaje({ ropa: op.color, accesorio: op.accesorio });
     // El tesoro dorado en sus manos.
     const tesoro = new THREE.Mesh(
       new THREE.BoxGeometry(0.6, 0.6, 0.6),
@@ -136,7 +138,8 @@ export function iniciarPartida(caso: Caso, mundo: Mundo): Partida {
     );
     tesoro.position.set(0, 1.9, 0.5);
     ladron.modelo.add(tesoro);
-    ladron.marcar(false);
+    // El «!» ayuda a encontrarlo cuando reaparece en otra azotea.
+    ladron.marcar(true);
     ladron.modelo.position.copy(rutaLadron[0]);
     mirarHacia(ladron.modelo, c.inicio);
     mundo.escena.add(ladron.modelo);
@@ -274,7 +277,7 @@ export function iniciarPartida(caso: Caso, mundo: Mundo): Partida {
           texto: `¡Te atrapé, ${op.nombre}! ${caso.tesoro[0].toUpperCase()}${caso.tesoro.slice(1)} vuelve a su dueño.`,
           aprendiz: '¡Te atrapé!',
         }),
-        segun({ quien: caso.ladron, texto: '¡Sacrebleu! ¡Otra vez esa Carmen Sandiego!', aprendiz: '¡Oh, no! ¡Carmen otra vez!' }),
+        segun({ quien: caso.ladron, ...caso.fraseLadron }),
         segun({
           quien: 'chase',
           texto: '¡Alto ahí, Carmen Sandiego! ...¿Eh? Ya se fue. Solo dejó una tarjeta roja.',
@@ -288,7 +291,7 @@ export function iniciarPartida(caso: Caso, mundo: Mundo): Partida {
       ],
       () => {
         const estrellas = estado.estrellas();
-        const { antes, despues } = mundo.alResolver(estrellas);
+        const { antes, despues } = mundo.alResolver(caso.id, estrellas);
         mostrarResultado({
           estado,
           rango: rango(despues),
@@ -308,9 +311,26 @@ export function iniciarPartida(caso: Caso, mundo: Mundo): Partida {
     const carmen = mundo.posicionCarmen;
     if (salto) {
       salto.t = Math.min(1, salto.t + dt / DURACION_SALTO_LADRON);
-      ladron.modelo.position.lerpVectors(salto.desde, salto.hasta, salto.t);
-      ladron.modelo.position.y += Math.sin(salto.t * Math.PI) * 6; // arco del salto
+      if (OPERATIVOS[caso.ladron].huida === 'excavar') {
+        // Se hunde cavando en el techo y sale por otra azotea.
+        const t = salto.t;
+        if (t < 0.45) {
+          ladron.modelo.position.copy(salto.desde);
+          ladron.modelo.position.y -= (t / 0.45) * PROFUNDIDAD_TUNEL;
+        } else if (t < 0.55) {
+          ladron.modelo.visible = false;
+        } else {
+          ladron.modelo.visible = true;
+          ladron.modelo.position.copy(salto.hasta);
+          ladron.modelo.position.y -= (1 - (t - 0.55) / 0.45) * PROFUNDIDAD_TUNEL;
+        }
+      } else {
+        ladron.modelo.position.lerpVectors(salto.desde, salto.hasta, salto.t);
+        ladron.modelo.position.y += Math.sin(salto.t * Math.PI) * 6; // arco del salto
+      }
       if (salto.t >= 1) {
+        ladron.modelo.visible = true;
+        ladron.modelo.position.copy(salto.hasta);
         salto = null;
         mirarHacia(ladron.modelo, carmen);
       }
@@ -326,9 +346,12 @@ export function iniciarPartida(caso: Caso, mundo: Mundo): Partida {
       mirarHacia(ladron.modelo, rutaLadron[etapaLadron]);
       sonar('salto');
       const aprendiz = mundo.nivel() === 'aprendiz';
+      const cava = OPERATIVOS[caso.ladron].huida === 'excavar';
       avisoPlayer(
         etapaLadron === 1
-          ? aprendiz ? '¡Se escapa! ¡Usa tu gancho!' : '¡Se escapa! ¡Síguelo con tu gancho!'
+          ? cava
+            ? aprendiz ? '¡Se metió en un túnel! Busca el «!».' : '¡Cavó un túnel! Busca el «!» y síguelo con tu gancho.'
+            : aprendiz ? '¡Se escapa! ¡Usa tu gancho!' : '¡Se escapa! ¡Síguelo con tu gancho!'
           : aprendiz ? '¡Está cansado! ¡Ya casi!' : '¡Está cansado! ¡Una vez más y lo atrapas!',
         3,
       );

@@ -5,7 +5,8 @@ import { crearEntrada, esTactil } from './core/entrada';
 import { cargarProgreso, guardarProgreso, type Ajustes } from './core/guardado';
 import { configurarSonido, sonar } from './core/sonido';
 import { configurarVoz } from './core/voz';
-import { CASO_GATO_DE_LA_SUERTE } from './data/casos';
+import { CASOS } from './data/casos';
+import type { Caso } from './data/tipos';
 import { crearGancho } from './gadgets/gancho';
 import { iniciarPartida, type Mundo, type Partida } from './missions/partida';
 import { crearCarmen } from './player/carmen';
@@ -20,6 +21,7 @@ import {
   mostrarAvisoFan,
   mostrarTitulo,
 } from './ui/pantallas';
+import { elegirCaso } from './ui/caso-ui';
 import { crearCiudad, type Ciudad } from './world/ciudad';
 
 const lienzo = document.getElementById('scene') as HTMLCanvasElement;
@@ -179,8 +181,17 @@ function bienvenida(): void {
         aprendiz: '¡Tenemos una misión!',
       },
     ],
-    jugar,
+    mostrarCasos,
   );
+}
+
+function mostrarCasos(): void {
+  elegirCaso({
+    casos: CASOS,
+    estrellas: progreso.estrellas,
+    alElegir: jugar,
+    alVolver: () => mostrarTitulo(empezar),
+  });
 }
 
 const mundo: Mundo = {
@@ -209,8 +220,7 @@ const mundo: Mundo = {
     }
   },
   nivel: () => progreso.dificultad ?? 'detective',
-  alResolver(estrellas) {
-    const id = CASO_GATO_DE_LA_SUERTE.id;
+  alResolver(id, estrellas) {
     const antes = progreso.casosResueltos.length;
     if (!progreso.casosResueltos.includes(id)) progreso.casosResueltos.push(id);
     progreso.estrellas[id] = Math.max(progreso.estrellas[id] ?? 0, estrellas);
@@ -241,13 +251,13 @@ function explicarControles(): void {
   );
 }
 
-function jugar(): void {
+function jugar(caso: Caso): void {
   jugando = true;
   momentoInicio = reloj.elapsedTime;
   document.body.classList.add('jugando');
   faltaExplicarControles = !explicoControles;
   // La partida abre su diálogo de inicio; al cerrarlo, Carmen puede moverse.
-  partida = iniciarPartida(CASO_GATO_DE_LA_SUERTE, mundo);
+  partida = iniciarPartida(caso, mundo);
 }
 
 function pausar(): void {
@@ -296,7 +306,7 @@ window.addEventListener('keydown', (e) => {
 });
 
 function empezar(): void {
-  const seguir = () => (vioBienvenida ? jugar() : bienvenida());
+  const seguir = () => (vioBienvenida ? mostrarCasos() : bienvenida());
   if (progreso.dificultad) {
     seguir();
     return;

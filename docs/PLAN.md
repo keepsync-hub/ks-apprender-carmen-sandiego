@@ -75,7 +75,8 @@ avión. **Chase Devineaux** (ACME) la persigue y siempre llega tarde (gag recurr
   - **Prólogo – Isla de V.I.L.E.**: Black Sheep escapa de la escuela. Tutorial de correr, saltar, gancho y labial. Coach Brunt como "entrenadora" cómica.
   - **Caso 1 – "El caso del Gato de la Suerte"**: San Francisco → pistas llevan a **Ciudad de México** → final en **Buenos Aires**. Operativo: **Le Chèvre** (parkour).
 - **v2**
-  - **Caso 2 – "El caso de las piedras de Río"**: Río de Janeiro, Quito. Operativo: **El Topo**.
+  - **Caso 2 – "El caso de las piedras de Río"**: Río de Janeiro → Lima → Quito. Operativo: **El Topo** (huye cavando túneles). ✅
+    Hitos: Cristo Redentor y Mitad del Mundo con la línea del ecuador. Pantalla «Elige un caso».
   - **Caso 3 – "El caso del Moái"** (original, no está en la serie): **Santiago de Chile**, Isla de Pascua (Rapa Nui). Operativo: **Tigress**.
   - **Caso 4 – París / Casablanca**. Operativo: **Paperstar**.
   - Álbum de Ciudades completo; planeador y binoculares.

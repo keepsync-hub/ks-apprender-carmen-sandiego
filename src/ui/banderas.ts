@@ -38,6 +38,12 @@ const BANDERAS: Record<IdCiudad, string> = {
     <rect y="10" width="30" height="10" fill="#d52b1e"/>
     <rect width="10" height="10" fill="#0039a6"/>
     <polygon points="5,2 5.9,4.6 8.6,4.6 6.4,6.2 7.2,8.8 5,7.2 2.8,8.8 3.6,6.2 1.4,4.6 4.1,4.6" fill="#fff"/>`,
+  // Ecuador: amarillo (la mitad de arriba), azul y rojo, con el escudo al centro.
+  quito: `
+    <rect width="30" height="10" fill="#ffdd00"/>
+    <rect y="10" width="30" height="5" fill="#034ea2"/>
+    <rect y="15" width="30" height="5" fill="#ed1c24"/>
+    <ellipse cx="15" cy="10" rx="2.4" ry="3" fill="#6ec6ff" stroke="#8c5a2b" stroke-width="0.6"/>`,
   // Brasil: verde con rombo amarillo y círculo azul.
   'rio-de-janeiro': `
     <rect width="30" height="20" fill="#009c3b"/>

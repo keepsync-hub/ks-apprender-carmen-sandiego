@@ -1,9 +1,9 @@
 import { sonar } from '../core/sonido';
 import { hablar } from '../core/voz';
 import { CIUDADES } from '../data/ciudades';
-import type { Pista } from '../data/tipos';
+import type { Caso, Pista } from '../data/tipos';
 import type { EstadoCaso } from '../missions/caso';
-import { imagenPista } from './banderas';
+import { banderaSvg, imagenPista } from './banderas';
 import { boton, elemento, limpiar, textoSegunNivel } from './pantallas';
 
 /** Libreta con todas las pistas escuchadas; cada una se puede volver a escuchar. */
@@ -81,4 +81,58 @@ export function mostrarResultado({ estado, rango, subioDeRango, alTitulo }: Opci
     `¡Caso resuelto! Ganaste ${estrellas} ${estrellas === 1 ? 'estrella' : 'estrellas'}. ` +
       (subioDeRango ? `¡Ahora eres ${rango}!` : ''),
   );
+}
+
+export interface OpcionesElegirCaso {
+  casos: Caso[];
+  /** Mejores estrellas por id de caso. */
+  estrellas: Record<string, number>;
+  alElegir: (caso: Caso) => void;
+  alVolver: () => void;
+}
+
+/**
+ * Tarjetas grandes con el tesoro, la ciudad donde empieza y las estrellas ganadas.
+ * No se muestra la ruta completa: sería darle las respuestas del mapa.
+ */
+export function elegirCaso({ casos, estrellas, alElegir, alVolver }: OpcionesElegirCaso): void {
+  limpiar();
+  const ventana = elemento('div', 'ventana elegir-caso');
+  const pregunta = 'Elige un caso';
+  ventana.append(elemento('p', 'subtitulo', pregunta));
+  const lista = elemento('div', 'lista-casos');
+  for (const caso of casos) {
+    const ganadas = estrellas[caso.id] ?? 0;
+    const tarjeta = boton('', () => {
+      limpiar();
+      alElegir(caso);
+    });
+    tarjeta.classList.add('tarjeta-caso');
+    const inicio = caso.paradas[0].ciudad;
+    const ruta = elemento('span', 'ruta-caso');
+    ruta.innerHTML = banderaSvg(inicio);
+    ruta.append(elemento('span', '', `Empieza en ${CIUDADES[inicio].nombre}`));
+    tarjeta.append(
+      elemento('span', 'tarjeta-icono', caso.iconoTesoro),
+      elemento('strong', 'tarjeta-titulo', caso.titulo),
+      ruta,
+      elemento(
+        'span',
+        'estrellas-caso',
+        ganadas ? '★'.repeat(ganadas) + '☆'.repeat(3 - ganadas) : '¡Nuevo!',
+      ),
+    );
+    tarjeta.addEventListener('pointerenter', () => hablar(caso.titulo));
+    lista.append(tarjeta);
+  }
+  const botones = elemento('div', 'botones');
+  botones.append(
+    boton('Volver', () => {
+      limpiar();
+      alVolver();
+    }),
+  );
+  ventana.append(lista, botones);
+  document.getElementById('ui')!.append(ventana);
+  hablar(`${pregunta}. ${casos.map((c) => c.titulo).join('. ')}.`);
 }
