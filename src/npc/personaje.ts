@@ -16,7 +16,7 @@ export interface OpcionesPersonaje {
   piel?: number;
   pelo?: number;
   /** Accesorio en la cabeza. */
-  accesorio?: 'gorra' | 'cuernos' | 'ninguno';
+  accesorio?: 'gorra' | 'cuernos' | 'casco' | 'ninguno';
 }
 
 export interface Personaje {
@@ -57,6 +57,18 @@ export function crearPersonaje(opciones: OpcionesPersonaje): Personaje {
     const visera = caja(0.6, 0.08, 0.4, ropa);
     visera.position.set(0, 3.32, 0.55);
     cuerpo.add(gorra, visera);
+  } else if (accesorio === 'casco') {
+    // Casco de minero con lámpara, para El Topo.
+    const casco = caja(0.9, 0.35, 0.9, 0x5a3a1a);
+    casco.position.y = 3.4;
+    const lampara = new THREE.Mesh(
+      new THREE.BoxGeometry(0.25, 0.2, 0.1),
+      new THREE.MeshBasicMaterial({ color: 0xffd23f }),
+    );
+    lampara.position.set(0, 3.42, 0.47);
+    const lentes = caja(0.7, 0.16, 0.05, 0x111111);
+    lentes.position.set(0, 2.98, 0.39);
+    cuerpo.add(casco, lampara, lentes);
   } else if (accesorio === 'cuernos') {
     // Capucha con cuernos de cabra, para Le Chèvre.
     for (const lado of [-1, 1]) {

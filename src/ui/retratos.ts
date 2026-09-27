@@ -229,6 +229,26 @@ const PAPERSTAR = [
   '..pppppppppppp..',
 ];
 
+// Neal the Eel: traje de neopreno café y lentes de buceo en la frente.
+const NEAL = [
+  '................',
+  '....nnnnnnnn....',
+  '...nnnnnnnnnn...',
+  '...aaaaaaaaaa...',
+  '...abbaaaabba...',
+  '...ssssssssss...',
+  '...ssesssses....',
+  '...ssssssssss...',
+  '....ssmmmmss....',
+  '.....ssssss.....',
+  '......ssss......',
+  '....uuuuuuuu....',
+  '...uujuuuujuu...',
+  '..uuuuuuuuuuuu..',
+  '..uuuuuuuuuuuu..',
+  '..uuuuuuuuuuuu..',
+];
+
 // Testigo genérico con gorra.
 const TESTIGO = [
   '................',
@@ -280,6 +300,7 @@ export const RETRATOS = {
   'el-topo': EL_TOPO,
   tigress: TIGRESS,
   paperstar: PAPERSTAR,
+  neal: NEAL,
   testigo: TESTIGO,
   computadora: COMPUTADORA,
 } as const;

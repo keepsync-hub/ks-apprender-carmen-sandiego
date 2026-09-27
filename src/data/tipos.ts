@@ -10,9 +10,10 @@ export type IdCiudad =
   | 'lima'
   | 'tokio'
   | 'santiago'
-  | 'rio-de-janeiro';
+  | 'rio-de-janeiro'
+  | 'quito';
 
-export type IdOperativo = 'le-chevre' | 'el-topo' | 'tigress' | 'paperstar';
+export type IdOperativo = 'le-chevre' | 'el-topo' | 'tigress' | 'paperstar' | 'neal';
 
 /** Rasgos que se cruzan en la Crime Net. */
 export type Categoria = 'pasatiempo' | 'ropa';
@@ -28,12 +29,15 @@ export interface Operativo {
   rasgos: Record<Categoria, string>;
   /** Color de la ropa del modelo 3D (coincide con el rasgo «ropa»). */
   color: number;
+  /** Cómo escapa en la persecución final. */
+  huida: 'saltar' | 'excavar';
+  accesorio: 'cuernos' | 'casco' | 'ninguno';
 }
 
 export interface TemaCiudad {
   cielo: number;
   edificios: number[];
-  hito: 'puente' | 'piramide' | 'obelisco' | 'ninguno';
+  hito: 'puente' | 'piramide' | 'obelisco' | 'cristo' | 'mitad-del-mundo' | 'ninguno';
 }
 
 export interface Ciudad {
@@ -83,6 +87,8 @@ export interface Caso {
   titulo: string;
   tesoro: string;
   iconoTesoro: string;
+  /** Lo que dice el ladrón al ser atrapado. */
+  fraseLadron: { texto: string; aprendiz: string };
   ladron: IdOperativo;
   /** Ciudades con pistas, en orden. La última de la lista es donde se atrapa al ladrón. */
   paradas: Parada[];

@@ -89,6 +89,7 @@ const NOMBRES: Record<Personaje, string> = {
   'el-topo': 'El Topo',
   tigress: 'Tigress',
   paperstar: 'Paperstar',
+  neal: 'Neal the Eel',
   testigo: 'Testigo',
   computadora: 'Computadora de V.I.L.E.',
 };

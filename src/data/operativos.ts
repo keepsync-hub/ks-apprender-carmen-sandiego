@@ -8,24 +8,40 @@ export const OPERATIVOS: Record<IdOperativo, Operativo> = {
     nombre: 'Le Chèvre',
     rasgos: { pasatiempo: 'trepar', ropa: 'gris' },
     color: 0x8a8a96,
+    huida: 'saltar',
+    accesorio: 'cuernos',
   },
   'el-topo': {
     id: 'el-topo',
     nombre: 'El Topo',
     rasgos: { pasatiempo: 'excavar', ropa: 'café' },
     color: 0x7a4a2b,
+    huida: 'excavar',
+    accesorio: 'casco',
   },
   tigress: {
     id: 'tigress',
     nombre: 'Tigress',
     rasgos: { pasatiempo: 'trepar', ropa: 'morada' },
     color: 0x7a4fb0,
+    huida: 'saltar',
+    accesorio: 'ninguno',
   },
   paperstar: {
     id: 'paperstar',
     nombre: 'Paperstar',
     rasgos: { pasatiempo: 'origami', ropa: 'rosada' },
     color: 0xe07bb0,
+    huida: 'saltar',
+    accesorio: 'ninguno',
+  },
+  neal: {
+    id: 'neal',
+    nombre: 'Neal the Eel',
+    rasgos: { pasatiempo: 'nadar', ropa: 'café' },
+    color: 0x7a4a2b,
+    huida: 'saltar',
+    accesorio: 'ninguno',
   },
 };
 
@@ -38,6 +54,7 @@ export const OPCIONES_RASGOS: Record<Categoria, { valor: string; imagen: string;
     { valor: 'trepar', imagen: '🧗', etiqueta: 'Trepar' },
     { valor: 'excavar', imagen: '⛏️', etiqueta: 'Excavar' },
     { valor: 'origami', imagen: '📄', etiqueta: 'Origami' },
+    { valor: 'nadar', imagen: '🏊', etiqueta: 'Nadar' },
   ],
   ropa: [
     { valor: 'gris', imagen: 'color:#8a8a96', etiqueta: 'Gris' },

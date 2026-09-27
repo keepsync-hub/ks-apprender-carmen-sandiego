@@ -1,7 +1,8 @@
 import { describe, expect, it } from 'vitest';
 import type { Dificultad } from '../core/guardado';
-import { CASOS, CASO_GATO_DE_LA_SUERTE } from '../data/casos';
+import { CASOS, CASO_GATO_DE_LA_SUERTE, CASO_PIEDRAS_DE_RIO } from '../data/casos';
 import { CIUDADES } from '../data/ciudades';
+import type { Caso } from '../data/tipos';
 import { OPERATIVOS } from '../data/operativos';
 import type { Seleccion } from './caso';
 import { EstadoCaso, rango } from './caso';
@@ -9,8 +10,8 @@ import { EstadoCaso, rango } from './caso';
 const fijo = () => 0; // barajado predecible
 
 /** Juega el caso completo escuchando a todos y eligiendo bien. */
-function jugarPerfecto(nivel: Dificultad): EstadoCaso {
-  const estado = new EstadoCaso(CASO_GATO_DE_LA_SUERTE, nivel, fijo);
+function jugarPerfecto(nivel: Dificultad, caso: Caso = CASO_GATO_DE_LA_SUERTE): EstadoCaso {
+  const estado = new EstadoCaso(caso, nivel, fijo);
   while (!estado.enFinal) {
     estado.testigosActuales().forEach((_, i) => estado.hablarCon(i));
     if (estado.debeIdentificarAntesDeViajar) {
@@ -84,6 +85,38 @@ describe('EstadoCaso', () => {
     expect(e.debeIdentificarAntesDeViajar).toBe(false);
     e.elegirDestino('ciudad-de-mexico');
     expect(e.debeIdentificarAntesDeViajar).toBe(true);
+  });
+});
+
+describe.each(CASOS.map((c) => [c.id, c] as const))('caso %s', (_, caso) => {
+  it.each(['aprendiz', 'detective'] as const)('en %s se puede resolver con sus pistas', (nivel) => {
+    const estado = jugarPerfecto(nivel, caso);
+    expect(estado.ciudadActual).toBe(caso.final);
+    expect(estado.identificado).toBe(true);
+  });
+
+  it('Detective recibe dos pistas del ladrón y una de ellas sola deja varios sospechosos', () => {
+    const e = new EstadoCaso(caso, 'detective', fijo);
+    const rasgos = caso.paradas.flatMap((p) =>
+      p.testigos.filter((t) => t.nivel !== 'aprendiz' && t.pista.rasgo).map((t) => t.pista.rasgo!),
+    );
+    expect(rasgos).toHaveLength(2);
+    const resultados = rasgos.map((r) => e.identificar({ [r.categoria]: r.valor }));
+    expect(resultados).toContain('varios');
+  });
+
+  it('cada ciudad tiene una computadora de V.I.L.E. para hackear', () => {
+    for (const parada of caso.paradas) {
+      expect(parada.testigos.some((t) => t.tipo === 'computadora')).toBe(true);
+    }
+  });
+});
+
+describe('Crime Net del caso de Río', () => {
+  it('«ropa café» deja a El Topo y Neal; con «excavar» queda El Topo', () => {
+    const e = new EstadoCaso(CASO_PIEDRAS_DE_RIO, 'detective', fijo);
+    expect(e.sospechosos({ ropa: 'café' }).map((o) => o.id).sort()).toEqual(['el-topo', 'neal']);
+    expect(e.identificar({ ropa: 'café', pasatiempo: 'excavar' })).toBe('identificado');
   });
 });
 

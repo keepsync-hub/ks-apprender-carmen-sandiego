@@ -757,3 +757,55 @@ body.bloqueado .aviso-player {
   background: #333;
   border-color: #666 #111 #111 #666;
 }
+
+/* ---------- Elegir un caso ---------- */
+.elegir-caso {
+  width: min(760px, 100%);
+  max-height: calc(100vh - 32px);
+  overflow-y: auto;
+}
+
+.lista-casos {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 16px;
+  margin: 0 0 16px;
+}
+
+.tarjeta-caso {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 16px;
+  background: var(--negro);
+  border-color: var(--gris-sombra) var(--negro) var(--negro) var(--gris-sombra);
+}
+
+.tarjeta-caso .tarjeta-icono {
+  font-size: 56px;
+}
+
+.tarjeta-titulo {
+  font-family: var(--fuente-lectura);
+  font-size: 20px;
+}
+
+.ruta-caso {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.ruta-caso .bandera {
+  width: 42px;
+  height: 28px;
+}
+
+.estrellas-caso {
+  font-family: var(--fuente-lectura);
+  font-size: 26px;
+  color: #ffd23f;
+}

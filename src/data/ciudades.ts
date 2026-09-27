@@ -51,7 +51,12 @@ export const CIUDADES: Record<IdCiudad, Ciudad> = {
     lon: -77.0,
     icono: '🦙',
     datoCurioso: 'Lima es la capital de Perú y está junto al océano Pacífico.',
-    tema: { cielo: 0xc9d3dc, edificios: [0xe8c07d, 0xd9d9d9], hito: 'ninguno' },
+    tema: {
+      // Cielo gris claro: en Lima casi nunca llueve, pero suele estar nublado.
+      cielo: 0xc9d3dc,
+      edificios: [0xf2d27a, 0xd9d9d9, 0x5aa9e6, 0xe85d75, 0xf2a541, 0xffffff],
+      hito: 'ninguno',
+    },
   },
   tokio: {
     id: 'tokio',
@@ -81,6 +86,24 @@ export const CIUDADES: Record<IdCiudad, Ciudad> = {
     lon: -43.2,
     icono: '🦜',
     datoCurioso: 'En Río de Janeiro está el Cristo Redentor, sobre el cerro Corcovado.',
-    tema: { cielo: 0x6ec6ff, edificios: [0x3bb273, 0xf2c14e], hito: 'ninguno' },
+    tema: {
+      cielo: 0x6ec6ff,
+      edificios: [0x3bb273, 0xf2c14e, 0x2a9df4, 0xffffff, 0xf78154, 0x7ed6a5],
+      hito: 'cristo',
+    },
+  },
+  quito: {
+    id: 'quito',
+    nombre: 'Quito',
+    pais: 'Ecuador',
+    lat: -0.2,
+    lon: -78.5,
+    icono: '🐢',
+    datoCurioso: 'Quito está muy cerca de la línea del ecuador, que divide la Tierra en dos mitades.',
+    tema: {
+      cielo: 0x8fd3ff,
+      edificios: [0xffffff, 0x5aa9e6, 0xf2d27a, 0xd98c6a, 0x9fb7c9, 0x3bb2a6],
+      hito: 'mitad-del-mundo',
+    },
   },
 };
