@@ -3,6 +3,7 @@ import './style.css';
 import * as THREE from 'three';
 import { crearEntrada, esTactil } from './core/entrada';
 import { cargarProgreso, guardarProgreso } from './core/guardado';
+import { crearGancho } from './gadgets/gancho';
 import { crearCarmen } from './player/carmen';
 import { crearControlador } from './player/controlador';
 import {
@@ -41,10 +42,26 @@ carmen.modelo.position.copy(ciudad.inicio);
 escena.add(carmen.modelo);
 
 const entrada = crearEntrada(lienzo);
-const controlador = crearControlador(carmen, camara, entrada, ciudad.solidos, ciudad.inicio);
+const gancho = crearGancho(escena, ciudad.anclajes, ciudad.solidos);
+const controlador = crearControlador(
+  carmen,
+  camara,
+  entrada,
+  gancho,
+  ciudad.solidos,
+  ciudad.inicio,
+);
 controlador.alCaer = () => avisoPlayer('¡Uy! Te llevo de vuelta a la azotea.');
 
+// Con ?prueba en la URL, las pruebas automáticas pueden leer el estado del juego.
+if (new URLSearchParams(location.search).has('prueba')) {
+  Object.assign(window, { juego: { posicion: controlador.posicion, gancho } });
+}
+
 let jugando = false;
+let explicoGancho = false;
+const botonGancho = document.querySelector<HTMLButtonElement>('.boton-gancho');
+let momentoInicio = 0;
 
 function ajustarTamano(): void {
   const { innerWidth: ancho, innerHeight: alto } = window;
@@ -61,6 +78,17 @@ renderer.setAnimationLoop(() => {
   const t = reloj.elapsedTime;
   if (jugando) {
     controlador.actualizar(dt, t);
+    botonGancho?.classList.toggle('sin-objetivo', !gancho.objetivo && !gancho.activo);
+    // La primera vez que aparece el aro amarillo, Player explica el gancho.
+    if (!explicoGancho && gancho.objetivo && t - momentoInicio > 8) {
+      explicoGancho = true;
+      avisoPlayer(
+        esTactil()
+          ? '¿Ves el aro amarillo? Toca «Gancho» para volar hasta allá.'
+          : '¿Ves el aro amarillo? Presiona G para volar hasta allá con tu gancho.',
+        6,
+      );
+    }
   } else {
     // Cámara orbitando a Carmen, como en la intro de un caso.
     const foco = carmen.modelo.position;
@@ -85,6 +113,7 @@ function bienvenida(): void {
       { quien: 'player', texto: 'V.I.L.E. quiere robar un tesoro muy valioso.' },
       { quien: 'carmen', texto: 'Entonces se lo quitaremos y lo devolveremos a su dueño.' },
       { quien: 'player', texto: 'Primero, a entrenar. ¡Corre y salta por las azoteas!' },
+      { quien: 'carmen', texto: 'Y con mi gancho llego a los techos más altos.' },
     ],
     jugar,
   );
@@ -92,6 +121,7 @@ function bienvenida(): void {
 
 function jugar(): void {
   jugando = true;
+  momentoInicio = reloj.elapsedTime;
   document.body.classList.add('jugando');
   entrada.activar(true);
   avisoPlayer(

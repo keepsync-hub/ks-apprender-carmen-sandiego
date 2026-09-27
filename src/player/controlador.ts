@@ -1,5 +1,6 @@
 import * as THREE from 'three';
 import type { Entrada } from '../core/entrada';
+import type { Gancho } from '../gadgets/gancho';
 import { moverConColisiones } from '../world/fisica';
 import type { Carmen } from './carmen';
 
@@ -25,6 +26,7 @@ export function crearControlador(
   carmen: Carmen,
   camara: THREE.PerspectiveCamera,
   entrada: Entrada,
+  gancho: Gancho,
   solidos: readonly THREE.Box3[],
   inicio: THREE.Vector3,
 ): Controlador {
@@ -54,14 +56,18 @@ export function crearControlador(
 
       const { x, y } = entrada.mover;
       deseado.copy(adelante).multiplyScalar(y).addScaledVector(derecha, x);
-      velocidad.x = deseado.x * VELOCIDAD;
-      velocidad.z = deseado.z * VELOCIDAD;
 
-      if (entrada.saltar && tiempoEnAire < TOLERANCIA_SALTO) {
-        velocidad.y = IMPULSO_SALTO;
-        tiempoEnAire = TOLERANCIA_SALTO;
+      // Mientras el gancho tira, él decide la velocidad (sin caminar ni gravedad).
+      const tirando = gancho.actualizar(dt, posicion, velocidad, adelante, entrada.gancho);
+      if (!tirando) {
+        velocidad.x = deseado.x * VELOCIDAD;
+        velocidad.z = deseado.z * VELOCIDAD;
+        if (entrada.saltar && tiempoEnAire < TOLERANCIA_SALTO) {
+          velocidad.y = IMPULSO_SALTO;
+          tiempoEnAire = TOLERANCIA_SALTO;
+        }
+        velocidad.y -= GRAVEDAD * dt;
       }
-      velocidad.y -= GRAVEDAD * dt;
 
       const { enSuelo } = moverConColisiones(posicion, velocidad, dt, solidos);
       tiempoEnAire = enSuelo ? 0 : tiempoEnAire + dt;
@@ -73,20 +79,24 @@ export function crearControlador(
           // Cayó a la calle: sin castigo, vuelve a la última azotea.
           posicion.copy(ultimaAzotea);
           velocidad.set(0, 0, 0);
+          gancho.soltar();
           controlador.alCaer?.();
         }
       }
 
-      // Carmen gira suavemente hacia donde camina.
+      // Carmen gira suavemente hacia donde camina (o hacia donde la tira el gancho).
       const rapidez = Math.hypot(x, y);
-      if (rapidez > 0.1) {
-        const objetivo = Math.atan2(deseado.x, deseado.z);
+      const volando = gancho.activo && Math.hypot(velocidad.x, velocidad.z) > 0.1;
+      if (rapidez > 0.1 || volando) {
+        const objetivo = volando
+          ? Math.atan2(velocidad.x, velocidad.z)
+          : Math.atan2(deseado.x, deseado.z);
         let diferencia = objetivo - carmen.modelo.rotation.y;
         diferencia = Math.atan2(Math.sin(diferencia), Math.cos(diferencia));
         carmen.modelo.rotation.y += diferencia * Math.min(1, dt * 12);
       }
       carmen.modelo.position.copy(posicion);
-      carmen.animar(tiempo, enSuelo ? rapidez : 0.3);
+      carmen.animar(tiempo, enSuelo ? rapidez : 0.3, gancho.activo);
 
       // Cámara detrás y arriba, siguiendo con suavidad.
       focoCamara.lerp(posicion, focoCamara.lengthSq() === 0 ? 1 : Math.min(1, dt * 8));

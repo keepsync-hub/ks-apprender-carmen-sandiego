@@ -1,11 +1,13 @@
 // Entrada unificada: teclado + ratón en computadora, joystick y botones en pantalla táctil.
-// El resto del juego solo lee `entrada.mover`, `entrada.saltar` y `entrada.girarCamara`.
+// El resto del juego solo lee `mover`, `saltar`, `gancho` y `girarCamara`.
 
 export interface Entrada {
   /** Dirección deseada: x = derecha, y = adelante. Largo entre 0 y 1. */
   mover: { x: number; y: number };
   /** true durante el cuadro en que se pidió saltar. */
   saltar: boolean;
+  /** true durante el cuadro en que se pidió usar el gancho. */
+  gancho: boolean;
   /** Giro de cámara acumulado desde el último cuadro (radianes). */
   girarCamara: number;
   /** Llamar al final de cada cuadro. */
@@ -18,6 +20,7 @@ const TECLAS_ATRAS = ['KeyS', 'ArrowDown'];
 const TECLAS_IZQUIERDA = ['KeyA', 'ArrowLeft'];
 const TECLAS_DERECHA = ['KeyD', 'ArrowRight'];
 const TECLAS_SALTO = ['Space'];
+const TECLAS_GANCHO = ['KeyG', 'KeyF'];
 const TECLAS_GIRO_IZQ = ['KeyQ'];
 const TECLAS_GIRO_DER = ['KeyE'];
 
@@ -29,6 +32,7 @@ export function crearEntrada(lienzo: HTMLCanvasElement): Entrada {
   const apretadas = new Set<string>();
   const joystick = { x: 0, y: 0 };
   let pidioSalto = false;
+  let pidioGancho = false;
   let giro = 0;
   let activa = false;
 
@@ -40,6 +44,7 @@ export function crearEntrada(lienzo: HTMLCanvasElement): Entrada {
       e.preventDefault(); // que las flechas y el espacio no desplacen la página
     }
     if (TECLAS_SALTO.includes(e.code) && !e.repeat) pidioSalto = true;
+    if (TECLAS_GANCHO.includes(e.code) && !e.repeat) pidioGancho = true;
     apretadas.add(e.code);
   });
   window.addEventListener('keyup', (e) => apretadas.delete(e.code));
@@ -75,7 +80,13 @@ export function crearEntrada(lienzo: HTMLCanvasElement): Entrada {
   const botonSalto = document.createElement('button');
   botonSalto.className = 'boton boton-salto';
   botonSalto.textContent = 'Saltar';
-  controles.append(base, botonSalto);
+  const botonGancho = document.createElement('button');
+  botonGancho.className = 'boton boton-gancho';
+  botonGancho.textContent = 'Gancho';
+  const acciones = document.createElement('div');
+  acciones.className = 'acciones';
+  acciones.append(botonGancho, botonSalto);
+  controles.append(base, acciones);
   document.body.append(controles);
 
   let dedoJoystick: number | null = null;
@@ -114,13 +125,19 @@ export function crearEntrada(lienzo: HTMLCanvasElement): Entrada {
     e.preventDefault();
     pidioSalto = true;
   });
+  botonGancho.addEventListener('pointerdown', (e) => {
+    e.preventDefault();
+    pidioGancho = true;
+  });
 
   const entrada: Entrada = {
     mover: { x: 0, y: 0 },
     saltar: false,
+    gancho: false,
     girarCamara: 0,
     finCuadro() {
       pidioSalto = false;
+      pidioGancho = false;
       giro = 0;
     },
     activar(valor) {
@@ -146,6 +163,7 @@ export function crearEntrada(lienzo: HTMLCanvasElement): Entrada {
       },
     },
     saltar: { get: () => activa && pidioSalto },
+    gancho: { get: () => activa && pidioGancho },
     girarCamara: {
       get() {
         let g = giro;

@@ -16,7 +16,7 @@ function azar(semilla: number): () => number {
 export interface Ciudad {
   grupo: THREE.Group;
   /** Puntos rojos donde se puede enganchar el gancho de Carmen. */
-  anclajes: THREE.Mesh[];
+  anclajes: THREE.Vector3[];
   /** Cajas contra las que choca Carmen (suelo, edificios, postes). */
   solidos: THREE.Box3[];
   /** Punto de partida de Carmen: el centro de una azotea. */
@@ -26,7 +26,8 @@ export interface Ciudad {
 
 export function crearCiudad(): Ciudad {
   const grupo = new THREE.Group();
-  const anclajes: THREE.Mesh[] = [];
+  const anclajes: THREE.Vector3[] = [];
+  const mallasAnclaje: THREE.Mesh[] = [];
   const solidos: THREE.Box3[] = [];
   const agregarSolido = (malla: THREE.Mesh) => {
     malla.updateMatrixWorld();
@@ -78,8 +79,10 @@ export function crearCiudad(): Ciudad {
         }
       }
 
-      // Algunas azoteas tienen un poste con punto de anclaje para el gancho.
-      if (!esInicio && r() < 0.3) {
+      // Muchas azoteas tienen un poste con punto de anclaje para el gancho, así
+      // siempre hay a dónde ir. Los edificios junto al inicio siempre tienen uno.
+      const juntoAlInicio = Math.abs(x - 1) + Math.abs(z - 1) === 1;
+      if (!esInicio && (juntoAlInicio || r() < 0.55)) {
         const poste = new THREE.Mesh(
           new THREE.BoxGeometry(0.25, 2, 0.25),
           new THREE.MeshLambertMaterial({ color: 0x222222 }),
@@ -89,7 +92,8 @@ export function crearCiudad(): Ciudad {
         anclaje.position.set(x * 8, alto + 2.4, z * 8);
         grupo.add(poste, anclaje);
         agregarSolido(poste);
-        anclajes.push(anclaje);
+        anclajes.push(anclaje.position);
+        mallasAnclaje.push(anclaje);
       }
     }
   }
@@ -100,7 +104,7 @@ export function crearCiudad(): Ciudad {
     solidos,
     inicio: new THREE.Vector3(8, alturaInicio, 8),
     animar(tiempo) {
-      for (const [i, a] of anclajes.entries()) {
+      for (const [i, a] of mallasAnclaje.entries()) {
         a.rotation.y = tiempo * 2 + i;
         a.scale.setScalar(1 + Math.sin(tiempo * 4 + i) * 0.15);
       }

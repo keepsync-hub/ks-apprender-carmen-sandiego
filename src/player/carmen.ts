@@ -22,8 +22,11 @@ function caja(ancho: number, alto: number, fondo: number, color: number): THREE.
 
 export interface Carmen {
   modelo: THREE.Group;
-  /** Balanceo suave de brazos y piernas; `velocidad` 0 = quieta. */
-  animar(tiempo: number, velocidad: number): void;
+  /**
+   * Balanceo suave de brazos y piernas; `velocidad` 0 = quieta.
+   * Con `colgando`, levanta el brazo derecho como si la tirara el gancho.
+   */
+  animar(tiempo: number, velocidad: number, colgando?: boolean): void;
 }
 
 export function crearCarmen(): Carmen {
@@ -83,10 +86,10 @@ export function crearCarmen(): Carmen {
 
   return {
     modelo,
-    animar(tiempo, velocidad) {
+    animar(tiempo, velocidad, colgando = false) {
       const paso = Math.sin(tiempo * 8) * 0.7 * Math.min(velocidad, 1);
       hombroIzq.rotation.x = paso;
-      hombroDer.rotation.x = -paso;
+      hombroDer.rotation.x = colgando ? -Math.PI * 0.85 : -paso;
       caderaIzq.rotation.x = -paso;
       caderaDer.rotation.x = paso;
       // Respiración cuando está quieta.

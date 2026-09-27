@@ -128,7 +128,7 @@ docs/              PLAN.md, INVESTIGACION.md
 
 1. **Esqueleto**: Vite + TS + Three.js, pantalla de título retro, escena 3D, deploy a Pages. ✅
 2. **Carmen jugable**: personaje de bloques, cámara 3ª persona, correr/saltar, colisiones, controles táctiles. ✅
-3. **Gancho** con apuntado automático.
+3. **Gancho** con apuntado automático (tirón hasta la azotea; el balanceo queda para v2). ✅
 4. **UI retro + voz**: diálogos con retrato, narración, selector de dificultad.
 5. **Motor de casos**: testigos, pistas con imagen, Crime Net, mapamundi, estrellas y rango.
 6. **Labial hacker**: minijuego.
