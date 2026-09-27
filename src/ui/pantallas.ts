@@ -90,6 +90,7 @@ const NOMBRES: Record<Personaje, string> = {
   tigress: 'Tigress',
   paperstar: 'Paperstar',
   testigo: 'Testigo',
+  computadora: 'Computadora de V.I.L.E.',
 };
 
 export function textoSegunNivel(linea: { texto: string; aprendiz?: string }, nivel: Dificultad): string {

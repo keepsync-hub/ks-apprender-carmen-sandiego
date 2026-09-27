@@ -133,7 +133,7 @@ docs/              PLAN.md, INVESTIGACION.md
 5. **Motor de casos**: testigos, pistas con imagen, Crime Net, mapamundi, estrellas y rango. ✅
    - Caso 1 jugable completo (San Francisco → Ciudad de México → Buenos Aires, Le Chèvre).
    - Pendiente: reloj suave del nivel Detective (hoy las estrellas dependen solo de los destinos equivocados).
-6. **Labial hacker**: minijuego.
+6. **Labial hacker**: minijuego de secuencia de colores y formas en computadoras de V.I.L.E. (una pista por ciudad). ✅
 7. **Prólogo en la Isla de V.I.L.E.** (el Caso 1 ya quedó hecho en el hito 5).
 8. **Pulido**: audio, guardado, Álbum de Ciudades, aviso de fan.
 9. **v2 / v3**.

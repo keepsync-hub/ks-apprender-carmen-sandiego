@@ -28,11 +28,12 @@ export const CASO_GATO_DE_LA_SUERTE: Caso = {
           },
         },
         {
-          nombre: 'Pescador Joe',
-          color: 0x2f5fb3,
+          nombre: 'Computadora de V.I.L.E.',
+          tipo: 'computadora',
+          color: 0x55555f,
           pista: {
-            texto: 'Dijo que iba a comer tacos y a visitar pirámides muy antiguas.',
-            aprendiz: '¡Quería comer tacos!',
+            texto: 'Mensaje secreto: «Mañana, a comer tacos junto a las pirámides.»',
+            aprendiz: 'Mensaje: «¡A comer tacos!»',
             imagen: '🌮',
           },
         },
@@ -74,11 +75,12 @@ export const CASO_GATO_DE_LA_SUERTE: Caso = {
           },
         },
         {
-          nombre: 'Lupita',
-          color: 0xe85d75,
+          nombre: 'Computadora de V.I.L.E.',
+          tipo: 'computadora',
+          color: 0x55555f,
           pista: {
-            texto: 'Me dijo que quería aprender a bailar tango.',
-            aprendiz: 'Quería bailar tango.',
+            texto: 'Mensaje secreto: «Clase de tango reservada. No llegues tarde.»',
+            aprendiz: 'Mensaje: «¡A bailar tango!»',
             imagen: '💃',
           },
         },

@@ -249,6 +249,26 @@ const TESTIGO = [
   '..gggggggggggg..',
 ];
 
+// Computadora de V.I.L.E.: monitor antiguo con pantalla verde.
+const COMPUTADORA = [
+  '................',
+  '..cccccccccccc..',
+  '..cxxxxxxxxxxc..',
+  '..cxggggggggxc..',
+  '..cxgxxgxgggxc..',
+  '..cxggggggggxc..',
+  '..cxgxgxxgggxc..',
+  '..cxggggggggxc..',
+  '..cxxxxxxxxxxc..',
+  '..cccccccccrcc..',
+  '......cccc......',
+  '....cccccccc....',
+  '................',
+  '..cccccccccccc..',
+  '..cxcxcxcxcxcc..',
+  '..cccccccccccc..',
+];
+
 export const RETRATOS = {
   player: PLAYER,
   carmen: CARMEN,
@@ -261,6 +281,7 @@ export const RETRATOS = {
   tigress: TIGRESS,
   paperstar: PAPERSTAR,
   testigo: TESTIGO,
+  computadora: COMPUTADORA,
 } as const;
 export type Personaje = keyof typeof RETRATOS;
 

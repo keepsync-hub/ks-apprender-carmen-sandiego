@@ -68,24 +68,36 @@ export function crearPersonaje(opciones: OpcionesPersonaje): Personaje {
   }
   modelo.add(cuerpo);
 
-  const marca = new THREE.Group();
-  const matMarca = new THREE.MeshBasicMaterial({ color: 0xffd23f });
-  const palo = new THREE.Mesh(new THREE.BoxGeometry(0.3, 0.8, 0.3), matMarca);
-  palo.position.y = 0.55;
-  const punto = new THREE.Mesh(new THREE.BoxGeometry(0.3, 0.3, 0.3), matMarca);
-  marca.add(palo, punto);
-  marca.position.y = 4.4;
-  modelo.add(marca);
+  const marca = crearMarca(4.4);
+  modelo.add(marca.grupo);
 
   return {
     modelo,
-    marcar(visible) {
-      marca.visible = visible;
-    },
+    marcar: marca.mostrar,
     animar(tiempo) {
-      marca.position.y = 4.4 + Math.sin(tiempo * 3) * 0.2;
-      marca.rotation.y = tiempo * 2;
+      marca.animar(tiempo);
       cuerpo.position.y = Math.abs(Math.sin(tiempo * 2)) * 0.05;
+    },
+  };
+}
+
+/** «!» amarillo flotante que marca a quien tiene una pista. */
+export function crearMarca(altura: number) {
+  const grupo = new THREE.Group();
+  const material = new THREE.MeshBasicMaterial({ color: 0xffd23f });
+  const palo = new THREE.Mesh(new THREE.BoxGeometry(0.3, 0.8, 0.3), material);
+  palo.position.y = 0.55;
+  const punto = new THREE.Mesh(new THREE.BoxGeometry(0.3, 0.3, 0.3), material);
+  grupo.add(palo, punto);
+  grupo.position.y = altura;
+  return {
+    grupo,
+    mostrar(visible: boolean) {
+      grupo.visible = visible;
+    },
+    animar(tiempo: number) {
+      grupo.position.y = altura + Math.sin(tiempo * 3) * 0.2;
+      grupo.rotation.y = tiempo * 2;
     },
   };
 }

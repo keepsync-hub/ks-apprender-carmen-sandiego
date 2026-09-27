@@ -1,7 +1,18 @@
 // Efectos de sonido chiptune generados en vivo con Web Audio (sin archivos ni
 // música con derechos). Ondas cuadradas y triangulares, como en los 90.
 
-export type Efecto = 'clic' | 'letra' | 'salto' | 'gancho' | 'aviso' | 'fanfarria';
+export type Efecto =
+  | 'clic'
+  | 'letra'
+  | 'salto'
+  | 'gancho'
+  | 'aviso'
+  | 'fanfarria'
+  | 'error'
+  | 'nota0'
+  | 'nota1'
+  | 'nota2'
+  | 'nota3';
 
 interface Nota {
   frecuencia: number;
@@ -25,6 +36,15 @@ const EFECTOS: Record<Efecto, Nota[]> = {
     { frecuencia: 988, inicio: 0, duracion: 0.06 },
     { frecuencia: 1319, inicio: 0.07, duracion: 0.1 },
   ],
+  error: [
+    { frecuencia: 196, inicio: 0, duracion: 0.15, onda: 'triangle', volumen: 0.1 },
+    { frecuencia: 165, inicio: 0.15, duracion: 0.2, onda: 'triangle', volumen: 0.1 },
+  ],
+  // Una nota por botón del labial hacker (mi, sol, si, re), como en «Simón dice».
+  nota0: [{ frecuencia: 330, inicio: 0, duracion: 0.3, onda: 'triangle', volumen: 0.12 }],
+  nota1: [{ frecuencia: 392, inicio: 0, duracion: 0.3, onda: 'triangle', volumen: 0.12 }],
+  nota2: [{ frecuencia: 494, inicio: 0, duracion: 0.3, onda: 'triangle', volumen: 0.12 }],
+  nota3: [{ frecuencia: 587, inicio: 0, duracion: 0.3, onda: 'triangle', volumen: 0.12 }],
   fanfarria: [
     { frecuencia: 523, inicio: 0, duracion: 0.12 },
     { frecuencia: 659, inicio: 0.12, duracion: 0.12 },
