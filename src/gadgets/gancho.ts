@@ -107,6 +107,8 @@ export interface Gancho {
   ): boolean;
   /** Suelta el gancho (por ejemplo, al reaparecer en la azotea). */
   soltar(): void;
+  /** Se llama al disparar el gancho. */
+  alDisparar: (() => void) | null;
 }
 
 export function crearGancho(
@@ -142,6 +144,7 @@ export function crearGancho(
   const gancho: Gancho = {
     objetivo: null,
     activo: false,
+    alDisparar: null,
     soltar() {
       anclado = null;
       gancho.activo = false;
@@ -156,6 +159,7 @@ export function crearGancho(
           tiempo = 0;
           quieto = 0;
           gancho.activo = true;
+          gancho.alDisparar?.();
         }
       }
 

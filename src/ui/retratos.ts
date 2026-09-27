@@ -14,6 +14,14 @@ const PALETA: Paleta = {
   g: '#3bb273', // polerón verde
   r: '#d6202b', // rojo Carmen
   k: '#8a0e16', // rojo oscuro
+  o: '#d9661f', // pelo colorín
+  b: '#2f5fb3', // polera azul
+  y: '#7a4fb0', // polera morada
+  d: '#7a4a2b', // piel oscura
+  w: '#e8e8e8', // pelo canoso
+  c: '#c8a46a', // gabardina beige
+  x: '#2a2a3a', // traje oscuro
+  f: '#d98a6a', // pecas
 };
 
 const PLAYER = [
@@ -54,7 +62,94 @@ const CARMEN = [
   '..rrrrrrrrrrrr..',
 ];
 
-export const RETRATOS = { player: PLAYER, carmen: CARMEN } as const;
+// Zack: chofer, pelo colorín y polera azul.
+const ZACK = [
+  '................',
+  '....oooooooo....',
+  '...oooooooooo...',
+  '...oossssssoo...',
+  '...osssssssso...',
+  '...ssesssses....',
+  '...sfssssssfs...',
+  '...ssssssssss...',
+  '....ssmmmmss....',
+  '.....ssssss.....',
+  '......ssss......',
+  '....bbbbbbbb....',
+  '...bbbbbbbbbb...',
+  '..bbbbbbbbbbbb..',
+  '..bbbbbbbbbbbb..',
+  '..bbbbbbbbbbbb..',
+];
+
+// Ivy: mecánica, pelo colorín tomado y polera morada.
+const IVY = [
+  '..........oo....',
+  '.....oooooooo...',
+  '....oooooooooo..',
+  '...oossssssoo...',
+  '...osssssssso...',
+  '...ssesssses....',
+  '...sfssssssfs...',
+  '...ssssssssss...',
+  '....sssmmsss....',
+  '.....ssssss.....',
+  '......ssss......',
+  '....yyyyyyyy....',
+  '...yyyyyyyyyy...',
+  '..yyyyyyyyyyyy..',
+  '..yyyyyyyyyyyy..',
+  '..yyyyyyyyyyyy..',
+];
+
+// La Jefa de ACME: pelo canoso corto y traje oscuro.
+const JEFA = [
+  '................',
+  '.....wwwwww.....',
+  '....wwwwwwww....',
+  '...wwddddddww...',
+  '...wddddddddw...',
+  '...ddeddddedd...',
+  '...dddddddddd...',
+  '...dddddddddd...',
+  '....ddmmmmdd....',
+  '.....dddddd.....',
+  '......dddd......',
+  '....xxxwwxxx....',
+  '...xxxxwwxxxx...',
+  '..xxxxxwwxxxxx..',
+  '..xxxxxxxxxxxx..',
+  '..xxxxxxxxxxxx..',
+];
+
+// Chase Devineaux: inspector con pelo negro peinado y gabardina beige.
+const CHASE = [
+  '................',
+  '....nnnnnnnn....',
+  '...nnnnnnnnnn...',
+  '...nnssssssnn...',
+  '...nsssssssn....',
+  '...ssesssses....',
+  '...ssssssssss...',
+  '...ssssssssss...',
+  '....ssmmmmss....',
+  '.....ssssss.....',
+  '......ssss......',
+  '....ccccwccc....',
+  '...cccccwcccc...',
+  '..ccccccwccccc..',
+  '..cccccccccccc..',
+  '..cccccccccccc..',
+];
+
+export const RETRATOS = {
+  player: PLAYER,
+  carmen: CARMEN,
+  zack: ZACK,
+  ivy: IVY,
+  jefa: JEFA,
+  chase: CHASE,
+} as const;
 export type Personaje = keyof typeof RETRATOS;
 
 export function dibujarRetrato(personaje: Personaje): HTMLCanvasElement {

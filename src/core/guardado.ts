@@ -2,20 +2,42 @@
 
 export type Dificultad = 'aprendiz' | 'detective';
 
+export interface Ajustes {
+  voz: boolean;
+  sonido: boolean;
+  /** Líneas de TV antigua sobre la pantalla. */
+  efectoTv: boolean;
+}
+
 export interface Progreso {
   dificultad: Dificultad | null;
+  ajustes: Ajustes;
 }
 
 const CLAVE = 'carmen-progreso-v1';
 
+function ajustesIniciales(): Ajustes {
+  const reducirMovimiento =
+    typeof matchMedia === 'function' && matchMedia('(prefers-reduced-motion: reduce)').matches;
+  return { voz: true, sonido: true, efectoTv: !reducirMovimiento };
+}
+
 export function cargarProgreso(): Progreso {
+  const inicial: Progreso = { dificultad: null, ajustes: ajustesIniciales() };
   try {
     const guardado = localStorage.getItem(CLAVE);
-    if (guardado) return { dificultad: null, ...JSON.parse(guardado) };
+    if (guardado) {
+      const datos = JSON.parse(guardado) as Partial<Progreso>;
+      return {
+        ...inicial,
+        ...datos,
+        ajustes: { ...inicial.ajustes, ...datos.ajustes },
+      };
+    }
   } catch {
-    // Sin almacenamiento (modo privado): se juega igual, sin guardar.
+    // Sin almacenamiento (modo privado) o datos dañados: se juega igual, sin guardar.
   }
-  return { dificultad: null };
+  return inicial;
 }
 
 export function guardarProgreso(progreso: Progreso): void {

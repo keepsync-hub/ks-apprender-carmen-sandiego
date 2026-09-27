@@ -4,6 +4,12 @@
 const PREFERENCIAS = ['es-419', 'es-US', 'es-MX', 'es-CL', 'es-AR', 'es-CO'];
 
 let vozElegida: SpeechSynthesisVoice | null = null;
+let activa = true;
+
+export function configurarVoz(encendida: boolean): void {
+  activa = encendida;
+  if (!encendida) callar();
+}
 
 function elegirVoz(): void {
   const voces = speechSynthesis.getVoices();
@@ -23,7 +29,7 @@ if ('speechSynthesis' in window) {
 }
 
 export function hablar(texto: string): void {
-  if (!('speechSynthesis' in window)) return;
+  if (!activa || !('speechSynthesis' in window)) return;
   speechSynthesis.cancel();
   const frase = new SpeechSynthesisUtterance(texto);
   frase.lang = vozElegida?.lang ?? 'es-419';

@@ -191,6 +191,51 @@ body.crt::after {
   pointer-events: none;
 }
 
+/* Nivel Aprendiz: letra más grande en diálogos y avisos. */
+body.aprendiz .texto {
+  font-size: clamp(22px, 5vw, 28px);
+}
+
+/* Botón de pausa: arriba a la derecha, solo mientras se juega. */
+.boton-pausa {
+  position: fixed;
+  top: 16px;
+  right: 16px;
+  min-width: 64px;
+  width: 64px;
+  padding: 0;
+  display: none;
+}
+
+body.jugando:not(.pausado) .boton-pausa {
+  display: block;
+}
+
+.menu-pausa .ajustes {
+  display: grid;
+  gap: 12px;
+  margin: 0 0 20px;
+}
+
+.ajuste {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.ajuste .etiqueta {
+  font-size: clamp(18px, 4vw, 22px);
+  text-align: left;
+}
+
+.boton-ajuste {
+  min-width: 160px;
+  background: var(--negro);
+  border-color: var(--gris-sombra) var(--negro) var(--negro) var(--gris-sombra);
+  color: var(--ambar);
+}
+
 /* Mientras se juega, el aviso no debe tapar los controles. */
 body.jugando .aviso-fan {
   display: none;
@@ -203,12 +248,6 @@ body.jugando .aviso-fan {
   }
   .dialogo .botones {
     justify-content: center;
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  body.crt::after {
-    display: none;
   }
 }
 
@@ -302,4 +341,22 @@ body.jugando .aviso-fan {
 
 #scene {
   touch-action: none;
+}
+
+/* En pantallas angostas el aviso de Player deja espacio al botón de pausa. */
+@media (max-width: 700px) {
+  .aviso-player {
+    left: 16px;
+    transform: none;
+    width: calc(100% - 112px);
+  }
+}
+
+/* En pausa no se muestran avisos encima del menú. */
+body.pausado .aviso-player {
+  display: none;
+}
+
+.boton-pausa {
+  z-index: 2;
 }

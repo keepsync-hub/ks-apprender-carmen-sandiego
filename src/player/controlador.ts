@@ -20,6 +20,7 @@ export interface Controlador {
   actualizar(dt: number, tiempo: number): void;
   /** Se llama cuando Carmen cae a la calle y vuelve a la última azotea. */
   alCaer: (() => void) | null;
+  alSaltar: (() => void) | null;
 }
 
 export function crearControlador(
@@ -47,6 +48,7 @@ export function crearControlador(
   const controlador: Controlador = {
     posicion,
     alCaer: null,
+    alSaltar: null,
     actualizar(dt, tiempo) {
       dt = Math.min(dt, 1 / 30); // evita atravesar paredes si el cuadro se atrasa
 
@@ -65,6 +67,7 @@ export function crearControlador(
         if (entrada.saltar && tiempoEnAire < TOLERANCIA_SALTO) {
           velocidad.y = IMPULSO_SALTO;
           tiempoEnAire = TOLERANCIA_SALTO;
+          controlador.alSaltar?.();
         }
         velocidad.y -= GRAVEDAD * dt;
       }
