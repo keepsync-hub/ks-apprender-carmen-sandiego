@@ -5,7 +5,9 @@ import { crearEntrada, esTactil } from './core/entrada';
 import { cargarProgreso, guardarProgreso, type Ajustes } from './core/guardado';
 import { configurarSonido, sonar } from './core/sonido';
 import { configurarVoz } from './core/voz';
+import { CASO_GATO_DE_LA_SUERTE } from './data/casos';
 import { crearGancho } from './gadgets/gancho';
+import { iniciarPartida, type Mundo, type Partida } from './missions/partida';
 import { crearCarmen } from './player/carmen';
 import { crearControlador } from './player/controlador';
 import {
@@ -18,7 +20,7 @@ import {
   mostrarAvisoFan,
   mostrarTitulo,
 } from './ui/pantallas';
-import { crearCiudad } from './world/ciudad';
+import { crearCiudad, type Ciudad } from './world/ciudad';
 
 const lienzo = document.getElementById('scene') as HTMLCanvasElement;
 const renderer = new THREE.WebGLRenderer({ canvas: lienzo, antialias: true });
@@ -39,30 +41,37 @@ sol.shadow.mapSize.set(2048, 2048);
 Object.assign(sol.shadow.camera, { left: -60, right: 60, top: 60, bottom: -60 });
 escena.add(sol);
 
-const ciudad = crearCiudad();
+// Colisiones y anclajes de la ciudad visible. El controlador y el gancho guardan
+// estas mismas listas, así que al cambiar de ciudad se reemplaza su contenido.
+const solidos: THREE.Box3[] = [];
+const anclajes: THREE.Vector3[] = [];
+let ciudad: Ciudad = crearCiudad();
 escena.add(ciudad.grupo);
+solidos.push(...ciudad.solidos);
+anclajes.push(...ciudad.anclajes);
 
 const carmen = crearCarmen();
 carmen.modelo.position.copy(ciudad.inicio);
 escena.add(carmen.modelo);
 
 const entrada = crearEntrada(lienzo);
-const gancho = crearGancho(escena, ciudad.anclajes, ciudad.solidos);
-const controlador = crearControlador(
-  carmen,
-  camara,
-  entrada,
-  gancho,
-  ciudad.solidos,
-  ciudad.inicio,
-);
+const gancho = crearGancho(escena, anclajes, solidos);
+const controlador = crearControlador(carmen, camara, entrada, gancho, solidos, ciudad.inicio);
 controlador.alCaer = () => avisoPlayer('¡Uy! Te llevo de vuelta a la azotea.');
 controlador.alSaltar = () => sonar('salto');
 gancho.alDisparar = () => sonar('gancho');
 
 // Con ?prueba en la URL, las pruebas automáticas pueden leer el estado del juego.
 if (new URLSearchParams(location.search).has('prueba')) {
-  Object.assign(window, { juego: { posicion: controlador.posicion, gancho } });
+  Object.assign(window, {
+    juego: {
+      posicion: controlador.posicion,
+      gancho,
+      teletransportar: (x: number, y: number, z: number) =>
+        controlador.teletransportar(new THREE.Vector3(x, y, z)),
+      puntos: () => partida?.puntosDeInteres().map((p) => p.toArray()) ?? [],
+    },
+  });
 }
 
 const progreso = cargarProgreso();
@@ -82,6 +91,11 @@ function segunNivel([detective, aprendiz]: [string, string]): string {
 
 let jugando = false;
 let pausado = false;
+/** Hay una pantalla del caso encima (diálogo, mapa, Crime Net…). */
+let bloqueado = false;
+let partida: Partida | null = null;
+let explicoControles = false;
+let faltaExplicarControles = false;
 let vioBienvenida = false;
 let explicoGancho = false;
 let momentoInicio = 0;
@@ -100,7 +114,8 @@ const reloj = new THREE.Clock();
 renderer.setAnimationLoop(() => {
   const dt = reloj.getDelta();
   const t = reloj.elapsedTime;
-  if (jugando && !pausado) {
+  if (jugando && !pausado) partida?.actualizar(dt, t);
+  if (jugando && !pausado && !bloqueado) {
     controlador.actualizar(dt, t);
     botonGancho?.classList.toggle('sin-objetivo', !gancho.objetivo && !gancho.activo);
     // La primera vez que aparece el aro amarillo, Player explica el gancho.
@@ -160,19 +175,62 @@ function bienvenida(): void {
       },
       {
         quien: 'player',
-        texto: 'Primero, a entrenar. ¡Corre y salta por las azoteas!',
-        aprendiz: '¡A entrenar! Corre y salta.',
+        texto: '¡Tenemos una misión! Te cuento todo al llegar.',
+        aprendiz: '¡Tenemos una misión!',
       },
     ],
     jugar,
   );
 }
 
-function jugar(): void {
-  jugando = true;
-  momentoInicio = reloj.elapsedTime;
-  document.body.classList.add('jugando');
-  entrada.activar(true);
+const mundo: Mundo = {
+  escena,
+  posicionCarmen: controlador.posicion,
+  cambiarCiudad(nueva, cielo) {
+    escena.remove(ciudad.grupo);
+    ciudad = nueva;
+    escena.add(ciudad.grupo);
+    solidos.splice(0, solidos.length, ...ciudad.solidos);
+    anclajes.splice(0, anclajes.length, ...ciudad.anclajes);
+    (escena.background as THREE.Color).setHex(cielo);
+    escena.fog?.color.setHex(cielo);
+    controlador.teletransportar(ciudad.inicio);
+  },
+  bloquear(valor) {
+    bloqueado = valor;
+    document.body.classList.toggle('bloqueado', valor);
+    entrada.activar(!valor && jugando && !pausado);
+    if (!valor) reloj.getDelta(); // descartar el tiempo que estuvo bloqueado
+    if (!valor && faltaExplicarControles) {
+      faltaExplicarControles = false;
+      explicoControles = true;
+      momentoInicio = reloj.elapsedTime;
+      explicarControles();
+    }
+  },
+  nivel: () => progreso.dificultad ?? 'detective',
+  alResolver(estrellas) {
+    const id = CASO_GATO_DE_LA_SUERTE.id;
+    const antes = progreso.casosResueltos.length;
+    if (!progreso.casosResueltos.includes(id)) progreso.casosResueltos.push(id);
+    progreso.estrellas[id] = Math.max(progreso.estrellas[id] ?? 0, estrellas);
+    guardarProgreso(progreso);
+    return { antes, despues: progreso.casosResueltos.length };
+  },
+  alSalir: salirAlTitulo,
+};
+
+function salirAlTitulo(): void {
+  partida?.terminar();
+  partida = null;
+  jugando = false;
+  bloqueado = false;
+  document.body.classList.remove('jugando', 'bloqueado');
+  entrada.activar(false);
+  mostrarTitulo(empezar);
+}
+
+function explicarControles(): void {
   avisoPlayer(
     segunNivel(
       esTactil()
@@ -183,8 +241,17 @@ function jugar(): void {
   );
 }
 
+function jugar(): void {
+  jugando = true;
+  momentoInicio = reloj.elapsedTime;
+  document.body.classList.add('jugando');
+  faltaExplicarControles = !explicoControles;
+  // La partida abre su diálogo de inicio; al cerrarlo, Carmen puede moverse.
+  partida = iniciarPartida(CASO_GATO_DE_LA_SUERTE, mundo);
+}
+
 function pausar(): void {
-  if (!jugando || pausado) return;
+  if (!jugando || pausado || bloqueado) return;
   pausado = true;
   document.body.classList.add('pausado');
   entrada.activar(false);
@@ -204,10 +271,7 @@ function pausar(): void {
     alSeguir: reanudar,
     alSalir() {
       reanudar();
-      jugando = false;
-      document.body.classList.remove('jugando');
-      entrada.activar(false);
-      mostrarTitulo(empezar);
+      salirAlTitulo();
     },
   });
 }

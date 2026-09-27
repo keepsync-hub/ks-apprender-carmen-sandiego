@@ -1,6 +1,7 @@
 import type { Ajustes, Dificultad } from '../core/guardado';
 import { sonar } from '../core/sonido';
 import { callar, hablar } from '../core/voz';
+import { imagenPista } from './banderas';
 import { dibujarRetrato, type Personaje } from './retratos';
 
 const raiz = document.getElementById('ui') as HTMLDivElement;
@@ -13,12 +14,12 @@ export function configurarDificultad(nueva: Dificultad): void {
   document.body.classList.toggle('aprendiz', nueva === 'aprendiz');
 }
 
-function limpiar(): void {
+export function limpiar(): void {
   callar();
   raiz.replaceChildren();
 }
 
-function elemento<K extends keyof HTMLElementTagNameMap>(
+export function elemento<K extends keyof HTMLElementTagNameMap>(
   etiqueta: K,
   clase: string,
   texto?: string,
@@ -29,7 +30,7 @@ function elemento<K extends keyof HTMLElementTagNameMap>(
   return el;
 }
 
-function boton(texto: string, alPulsar: () => void, detalle?: string): HTMLButtonElement {
+export function boton(texto: string, alPulsar: () => void, detalle?: string): HTMLButtonElement {
   const b = elemento('button', 'boton', texto);
   if (detalle) b.append(elemento('small', '', detalle));
   b.addEventListener('click', () => {
@@ -71,6 +72,10 @@ export interface Linea {
   texto: string;
   /** Versión más corta y simple para el nivel Aprendiz. */
   aprendiz?: string;
+  /** Nombre a mostrar si no es el del personaje (por ejemplo, un testigo). */
+  nombre?: string;
+  /** Imagen grande de la pista (emoji, `bandera:<id>` o `color:#rrggbb`). */
+  imagen?: string;
 }
 
 const NOMBRES: Record<Personaje, string> = {
@@ -80,21 +85,28 @@ const NOMBRES: Record<Personaje, string> = {
   ivy: 'Ivy',
   jefa: 'La Jefa',
   chase: 'Chase Devineaux',
+  'le-chevre': 'Le Chèvre',
+  'el-topo': 'El Topo',
+  tigress: 'Tigress',
+  paperstar: 'Paperstar',
+  testigo: 'Testigo',
 };
 
-export function textoSegunNivel(linea: Linea, nivel: Dificultad): string {
+export function textoSegunNivel(linea: { texto: string; aprendiz?: string }, nivel: Dificultad): string {
   return nivel === 'aprendiz' && linea.aprendiz ? linea.aprendiz : linea.texto;
 }
 
 /** Milisegundos por letra del efecto máquina de escribir. */
 const MS_POR_LETRA = 28;
+/** Toques más rápidos que esto tras aparecer una línea se ignoran (doble toque sin querer). */
+const MS_ANTES_DE_AVANZAR = 350;
 
 /**
  * Muestra un diálogo línea por línea, narrado en voz alta. En Detective el texto
  * aparece letra a letra como en los 90; en Aprendiz aparece entero de una vez para
  * que la voz y el texto vayan juntos.
  */
-export function dialogo(lineas: Linea[], alTerminar: () => void): void {
+export function dialogo(lineas: Linea[], alTerminar: () => void, textoFinal = '¡Vamos!'): void {
   let i = 0;
   let temporizador = 0;
   const mostrar = () => {
@@ -108,6 +120,7 @@ export function dialogo(lineas: Linea[], alTerminar: () => void): void {
     const botones = elemento('div', 'botones');
     const ultima = i === lineas.length - 1;
 
+    const mostradaEn = performance.now();
     let letras = dificultad === 'aprendiz' ? texto.length : 0;
     const escribiendo = () => letras < texto.length;
     parrafo.textContent = texto.slice(0, letras);
@@ -123,7 +136,7 @@ export function dialogo(lineas: Linea[], alTerminar: () => void): void {
     const escuchar = boton('🔊', () => hablar(texto));
     escuchar.classList.add('icono');
     escuchar.ariaLabel = 'Escuchar de nuevo';
-    const seguir = boton(ultima ? '¡Vamos!' : 'Seguir ▶', () => {
+    const seguir = boton(ultima ? textoFinal : 'Seguir ▶', () => {
       // Primer toque mientras escribe: mostrar todo el texto de una vez.
       if (escribiendo()) {
         letras = texto.length;
@@ -131,6 +144,7 @@ export function dialogo(lineas: Linea[], alTerminar: () => void): void {
         window.clearInterval(temporizador);
         return;
       }
+      if (performance.now() - mostradaEn < MS_ANTES_DE_AVANZAR) return;
       i++;
       if (i < lineas.length) mostrar();
       else {
@@ -139,7 +153,9 @@ export function dialogo(lineas: Linea[], alTerminar: () => void): void {
       }
     });
     botones.append(escuchar, seguir);
-    cuerpo.append(elemento('p', 'nombre', NOMBRES[linea.quien]), parrafo, botones);
+    cuerpo.append(elemento('p', 'nombre', linea.nombre ?? NOMBRES[linea.quien]));
+    if (linea.imagen) cuerpo.append(imagenPista(linea.imagen));
+    cuerpo.append(parrafo, botones);
     caja.append(dibujarRetrato(linea.quien), cuerpo);
     raiz.append(caja);
     seguir.focus();

@@ -21,6 +21,8 @@ export interface Controlador {
   /** Se llama cuando Carmen cae a la calle y vuelve a la última azotea. */
   alCaer: (() => void) | null;
   alSaltar: (() => void) | null;
+  /** Lleva a Carmen a otro lugar (por ejemplo, al llegar a una ciudad nueva). */
+  teletransportar(destino: THREE.Vector3): void;
 }
 
 export function crearControlador(
@@ -49,6 +51,15 @@ export function crearControlador(
     posicion,
     alCaer: null,
     alSaltar: null,
+    teletransportar(destino) {
+      posicion.copy(destino);
+      ultimaAzotea.copy(destino);
+      velocidad.set(0, 0, 0);
+      tiempoEnAire = 0;
+      gancho.soltar();
+      focoCamara.set(0, 0, 0); // la cámara salta directo, sin deslizarse por la ciudad
+      carmen.modelo.position.copy(destino);
+    },
     actualizar(dt, tiempo) {
       dt = Math.min(dt, 1 / 30); // evita atravesar paredes si el cuadro se atrasa
 

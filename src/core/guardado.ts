@@ -12,6 +12,10 @@ export interface Ajustes {
 export interface Progreso {
   dificultad: Dificultad | null;
   ajustes: Ajustes;
+  /** Ids de los casos resueltos (sin repetir). */
+  casosResueltos: string[];
+  /** Mejor cantidad de estrellas por caso. */
+  estrellas: Record<string, number>;
 }
 
 const CLAVE = 'carmen-progreso-v1';
@@ -23,7 +27,12 @@ function ajustesIniciales(): Ajustes {
 }
 
 export function cargarProgreso(): Progreso {
-  const inicial: Progreso = { dificultad: null, ajustes: ajustesIniciales() };
+  const inicial: Progreso = {
+    dificultad: null,
+    ajustes: ajustesIniciales(),
+    casosResueltos: [],
+    estrellas: {},
+  };
   try {
     const guardado = localStorage.getItem(CLAVE);
     if (guardado) {
