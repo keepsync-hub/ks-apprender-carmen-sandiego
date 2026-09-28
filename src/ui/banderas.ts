@@ -3,6 +3,13 @@ import type { IdCiudad } from '../data/tipos';
 // Banderas simplificadas dibujadas en SVG (30×20). Los emojis de bandera no se
 // ven en Windows, y a esta edad importan los colores y formas principales.
 
+// Chile: cantón azul con estrella blanca, blanco arriba y rojo abajo.
+const CHILE = `
+    <rect width="30" height="10" fill="#fff"/>
+    <rect y="10" width="30" height="10" fill="#d52b1e"/>
+    <rect width="10" height="10" fill="#0039a6"/>
+    <polygon points="5,2 5.9,4.6 8.6,4.6 6.4,6.2 7.2,8.8 5,7.2 2.8,8.8 3.6,6.2 1.4,4.6 4.1,4.6" fill="#fff"/>`;
+
 const BANDERAS: Record<IdCiudad, string> = {
   // Estados Unidos: franjas rojas y blancas con cantón azul y estrellas.
   'san-francisco': `
@@ -32,12 +39,9 @@ const BANDERAS: Record<IdCiudad, string> = {
   tokio: `
     <rect width="30" height="20" fill="#fff"/>
     <circle cx="15" cy="10" r="6" fill="#bc002d"/>`,
-  // Chile: cantón azul con estrella blanca, blanco arriba y rojo abajo.
-  santiago: `
-    <rect width="30" height="10" fill="#fff"/>
-    <rect y="10" width="30" height="10" fill="#d52b1e"/>
-    <rect width="10" height="10" fill="#0039a6"/>
-    <polygon points="5,2 5.9,4.6 8.6,4.6 6.4,6.2 7.2,8.8 5,7.2 2.8,8.8 3.6,6.2 1.4,4.6 4.1,4.6" fill="#fff"/>`,
+  santiago: CHILE,
+  // Rapa Nui (Isla de Pascua) es parte de Chile.
+  'rapa-nui': CHILE,
   // Ecuador: amarillo (la mitad de arriba), azul y rojo, con el escudo al centro.
   quito: `
     <rect width="30" height="10" fill="#ffdd00"/>

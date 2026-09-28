@@ -70,7 +70,8 @@ export function crearCiudad(tema: TemaCiudad = TEMA_ENTRENAMIENTO, semilla = 198
   };
   const r = azar(semilla);
 
-  bloque(200, 1, 200, 0x3a3a46, 0, -0.5, 0);
+  bloque(200, 1, 200, tema.suelo ?? 0x3a3a46, 0, -0.5, 0);
+  const rangoAltura = (tema.alturaMaxima ?? 18) - 4;
 
   const materialVentana = new THREE.MeshBasicMaterial({ color: 0xfff3b0 });
   const geoAnclaje = new THREE.OctahedronGeometry(0.4);
@@ -85,7 +86,7 @@ export function crearCiudad(tema: TemaCiudad = TEMA_ENTRENAMIENTO, semilla = 198
       // Calles cada tres manzanas.
       if (x % 3 === 0 || z % 3 === 0) continue;
       const esInicio = x === 1 && z === 1;
-      const alto = esInicio ? alturaInicio : 4 + Math.floor(r() * 14);
+      const alto = esInicio ? alturaInicio : 4 + Math.floor(r() * rangoAltura);
       const ancho = 5 + r() * 2;
       const color = tema.edificios[Math.floor(r() * tema.edificios.length)];
       bloque(ancho, alto, ancho, color, x * 8, alto / 2, z * 8);
@@ -198,6 +199,35 @@ function construirHito(hito: TemaCiudad['hito'], bloque: Bloque, grupo: THREE.Gr
     );
     linea.position.set(0, 0.03, -24);
     grupo.add(linea);
+  } else if (hito === 'cordillera') {
+    // La cordillera de los Andes al fondo, con nieve en las cumbres.
+    const cumbres: [number, number, number][] = [
+      [-40, 34, 30],
+      [-5, 44, 36],
+      [30, 30, 28],
+    ];
+    for (const [x, alto, ancho] of cumbres) {
+      bloque(ancho, alto, 20, 0x7d7f8c, x, alto / 2, -75);
+      bloque(ancho * 0.6, alto * 0.25, 16, 0x9a9cab, x, alto + alto * 0.125, -75);
+      bloque(ancho * 0.3, alto * 0.15, 12, 0xffffff, x, alto * 1.25 + alto * 0.075, -75);
+    }
+  } else if (hito === 'torre-roja') {
+    // Torre de telecomunicaciones roja y blanca, que se afina hacia arriba.
+    const pisos = [5, 4, 3, 2, 1.2];
+    pisos.forEach((ancho, i) => {
+      bloque(ancho, 6, ancho, i % 2 ? 0xffffff : 0xe8452c, -24, 3 + i * 6, -24);
+    });
+    bloque(0.4, 4, 0.4, 0xe8452c, -24, 32, -24);
+  } else if (hito === 'moais') {
+    // Ahu (plataforma de piedra) con cinco moáis mirando hacia la isla.
+    const piedra = 0x6b5b4b;
+    bloque(10, 1.2, 3, 0x8a7a66, -24, 0.6, -24);
+    for (let i = 0; i < 5; i++) {
+      const x = -28 + i * 2;
+      bloque(1.2, 3, 1, piedra, x, 2.7, -24);
+      bloque(1.4, 1.9, 1.2, piedra, x, 5.15, -24);
+      bloque(0.4, 0.7, 0.3, 0x5a4a3b, x, 5.1, -23.3); // nariz
+    }
   } else if (hito === 'obelisco') {
     const blanco = 0xf2f2f2;
     bloque(2, 26, 2, blanco, -24, 13, -24);

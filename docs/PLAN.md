@@ -77,7 +77,8 @@ avión. **Chase Devineaux** (ACME) la persigue y siempre llega tarde (gag recurr
 - **v2**
   - **Caso 2 – "El caso de las piedras de Río"**: Río de Janeiro → Lima → Quito. Operativo: **El Topo** (huye cavando túneles). ✅
     Hitos: Cristo Redentor y Mitad del Mundo con la línea del ecuador. Pantalla «Elige un caso».
-  - **Caso 3 – "El caso del Moái"** (original, no está en la serie): **Santiago de Chile**, Isla de Pascua (Rapa Nui). Operativo: **Tigress**.
+  - **Caso 3 – "El caso del moái perdido"** (original, no está en la serie): **Santiago → Tokio → Rapa Nui**. Operativo: **Tigress**. ✅
+    Hitos: cordillera de los Andes, torre roja de Tokio y moáis sobre su ahu (suelo de pasto y casas bajas).
   - **Caso 4 – París / Casablanca**. Operativo: **Paperstar**.
   - Álbum de Ciudades completo; planeador y binoculares.
 - **v3**

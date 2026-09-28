@@ -16,7 +16,7 @@ export interface OpcionesPersonaje {
   piel?: number;
   pelo?: number;
   /** Accesorio en la cabeza. */
-  accesorio?: 'gorra' | 'cuernos' | 'casco' | 'ninguno';
+  accesorio?: 'gorra' | 'cuernos' | 'casco' | 'orejas' | 'ninguno';
 }
 
 export interface Personaje {
@@ -69,6 +69,16 @@ export function crearPersonaje(opciones: OpcionesPersonaje): Personaje {
     const lentes = caja(0.7, 0.16, 0.05, 0x111111);
     lentes.position.set(0, 2.98, 0.39);
     cuerpo.add(casco, lampara, lentes);
+  } else if (accesorio === 'orejas') {
+    // Antifaz y orejas de gato, para Tigress.
+    const antifaz = caja(0.8, 0.22, 0.05, ropa);
+    antifaz.position.set(0, 2.97, 0.39);
+    cuerpo.add(antifaz);
+    for (const lado of [-1, 1]) {
+      const oreja = caja(0.22, 0.3, 0.12, ropa);
+      oreja.position.set(lado * 0.27, 3.45, 0);
+      cuerpo.add(oreja);
+    }
   } else if (accesorio === 'cuernos') {
     // Capucha con cuernos de cabra, para Le Chèvre.
     for (const lado of [-1, 1]) {
