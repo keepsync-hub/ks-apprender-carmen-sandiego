@@ -11,7 +11,8 @@ export type IdCiudad =
   | 'tokio'
   | 'santiago'
   | 'rio-de-janeiro'
-  | 'quito';
+  | 'quito'
+  | 'rapa-nui';
 
 export type IdOperativo = 'le-chevre' | 'el-topo' | 'tigress' | 'paperstar' | 'neal';
 
@@ -31,13 +32,26 @@ export interface Operativo {
   color: number;
   /** Cómo escapa en la persecución final. */
   huida: 'saltar' | 'excavar';
-  accesorio: 'cuernos' | 'casco' | 'ninguno';
+  accesorio: 'cuernos' | 'casco' | 'orejas' | 'ninguno';
 }
 
 export interface TemaCiudad {
   cielo: number;
   edificios: number[];
-  hito: 'puente' | 'piramide' | 'obelisco' | 'cristo' | 'mitad-del-mundo' | 'ninguno';
+  hito:
+    | 'puente'
+    | 'piramide'
+    | 'obelisco'
+    | 'cristo'
+    | 'mitad-del-mundo'
+    | 'cordillera'
+    | 'torre-roja'
+    | 'moais'
+    | 'ninguno';
+  /** Color del suelo (asfalto si falta). */
+  suelo?: number;
+  /** Altura máxima de los edificios (18 si falta); más bajo para un pueblo. */
+  alturaMaxima?: number;
 }
 
 export interface Ciudad {

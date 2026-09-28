@@ -64,9 +64,13 @@ export const CIUDADES: Record<IdCiudad, Ciudad> = {
     pais: 'Japón',
     lat: 35.7,
     lon: 139.7,
-    icono: '🗻',
+    icono: '🍣',
     datoCurioso: 'Tokio es una de las ciudades con más habitantes del mundo.',
-    tema: { cielo: 0xf4c2d7, edificios: [0xd9d9d9, 0x6c7a89], hito: 'ninguno' },
+    tema: {
+      cielo: 0xf4c2d7,
+      edificios: [0xd9d9d9, 0x6c7a89, 0xf2a7c3, 0x4d9de0, 0xffffff, 0x3a3a46],
+      hito: 'torre-roja',
+    },
   },
   santiago: {
     id: 'santiago',
@@ -76,7 +80,11 @@ export const CIUDADES: Record<IdCiudad, Ciudad> = {
     lon: -70.6,
     icono: '🏔️',
     datoCurioso: 'Santiago está rodeada por la cordillera de los Andes.',
-    tema: { cielo: 0x9ccbee, edificios: [0xd9d9d9, 0xc0504d], hito: 'ninguno' },
+    tema: {
+      cielo: 0x9ccbee,
+      edificios: [0xd9d9d9, 0xc0504d, 0xf2d27a, 0x9fb7c9, 0xffffff, 0xd98c6a],
+      hito: 'cordillera',
+    },
   },
   'rio-de-janeiro': {
     id: 'rio-de-janeiro',
@@ -104,6 +112,22 @@ export const CIUDADES: Record<IdCiudad, Ciudad> = {
       cielo: 0x8fd3ff,
       edificios: [0xffffff, 0x5aa9e6, 0xf2d27a, 0xd98c6a, 0x9fb7c9, 0x3bb2a6],
       hito: 'mitad-del-mundo',
+    },
+  },
+  'rapa-nui': {
+    id: 'rapa-nui',
+    nombre: 'Rapa Nui',
+    pais: 'Chile',
+    lat: -27.1,
+    lon: -109.4,
+    icono: '🗿',
+    datoCurioso: 'En Rapa Nui, la Isla de Pascua, hay casi mil estatuas moái talladas en piedra volcánica.',
+    tema: {
+      cielo: 0x7fd8ff,
+      edificios: [0xffffff, 0xf2d27a, 0xd98c6a, 0x7ed6a5, 0x5aa9e6],
+      hito: 'moais',
+      suelo: 0x5aa84a,
+      alturaMaxima: 9,
     },
   },
 };

@@ -25,7 +25,7 @@ export const OPERATIVOS: Record<IdOperativo, Operativo> = {
     rasgos: { pasatiempo: 'trepar', ropa: 'morada' },
     color: 0x7a4fb0,
     huida: 'saltar',
-    accesorio: 'ninguno',
+    accesorio: 'orejas',
   },
   paperstar: {
     id: 'paperstar',

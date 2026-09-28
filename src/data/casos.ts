@@ -221,4 +221,115 @@ export const CASO_PIEDRAS_DE_RIO: Caso = {
   ],
 };
 
-export const CASOS = [CASO_GATO_DE_LA_SUERTE, CASO_PIEDRAS_DE_RIO];
+// Caso 3, original (no está en la serie). Ruta: Santiago → Tokio → Rapa Nui.
+// Tigress se lleva un pequeño moái del museo y Carmen lo devuelve a su isla.
+//
+// Identificación en la Crime Net:
+// - Aprendiz: una pista, la ropa morada (solo Tigress viste de morado).
+// - Detective: dos pistas; «trepar» sola deja a Tigress y a Le Chèvre.
+export const CASO_MOAI_PERDIDO: Caso = {
+  id: 'moai-perdido',
+  titulo: 'El caso del moái perdido',
+  tesoro: 'el pequeño moái del museo',
+  iconoTesoro: '🗿',
+  fraseLadron: { texto: '¡Grrr! ¡Esta vez casi lo logro!', aprendiz: '¡Grrr! ¡Me atrapaste!' },
+  ladron: 'tigress',
+  final: 'rapa-nui',
+  paradas: [
+    {
+      ciudad: 'santiago',
+      senuelos: ['buenos-aires', 'quito'],
+      testigos: [
+        {
+          nombre: 'Vendedora de sopaipillas',
+          color: 0xe85d75,
+          pista: {
+            texto: 'Me preguntó por una bandera blanca con un círculo rojo al centro.',
+            aprendiz: 'Su bandera es blanca con un círculo rojo.',
+            imagen: 'bandera:tokio',
+          },
+        },
+        {
+          nombre: 'Computadora de V.I.L.E.',
+          tipo: 'computadora',
+          color: 0x55555f,
+          pista: {
+            texto: 'Mensaje secreto: «Te espero donde se come sushi con palillos.»',
+            aprendiz: 'Mensaje: «¡A comer sushi!»',
+            imagen: '🍣',
+          },
+        },
+        {
+          nombre: 'Niño del metro',
+          color: 0x2f5fb3,
+          nivel: 'detective',
+          pista: {
+            texto: '¡Trepaba por la pared del cerro como un gato!',
+            aprendiz: 'Trepaba como un gato.',
+            imagen: '🧗',
+            rasgo: { categoria: 'pasatiempo', valor: 'trepar' },
+          },
+        },
+        {
+          nombre: 'Niño del metro',
+          color: 0x2f5fb3,
+          nivel: 'aprendiz',
+          pista: {
+            texto: 'Llevaba un traje morado y un antifaz.',
+            aprendiz: 'Llevaba un traje morado.',
+            imagen: 'color:#7a4fb0',
+            rasgo: { categoria: 'ropa', valor: 'morada' },
+          },
+        },
+      ],
+    },
+    {
+      ciudad: 'tokio',
+      senuelos: ['san-francisco', 'rio-de-janeiro'],
+      testigos: [
+        {
+          nombre: 'Conductor del tren bala',
+          color: 0x2a2a3a,
+          pista: {
+            texto: 'Preguntó por una isla en medio del océano Pacífico, con estatuas gigantes de piedra.',
+            aprendiz: 'Iba a ver estatuas gigantes de piedra.',
+            imagen: '🗿',
+          },
+        },
+        {
+          nombre: 'Computadora de V.I.L.E.',
+          tipo: 'computadora',
+          color: 0x55555f,
+          pista: {
+            texto: 'Mensaje secreto: «Vuelo reservado a una isla de Chile. Lleva sombrero para el sol.»',
+            aprendiz: 'Mensaje: «¡A una isla de Chile!»',
+            imagen: 'bandera:rapa-nui',
+          },
+        },
+        {
+          nombre: 'Chef de ramen',
+          color: 0xf2a541,
+          nivel: 'detective',
+          pista: {
+            texto: 'Tenía un traje morado y orejas de gato.',
+            aprendiz: 'Llevaba un traje morado.',
+            imagen: 'color:#7a4fb0',
+            rasgo: { categoria: 'ropa', valor: 'morada' },
+          },
+        },
+        {
+          nombre: 'Chef de ramen',
+          color: 0xf2a541,
+          nivel: 'aprendiz',
+          pista: {
+            texto: 'Me dijo que quería ver el océano desde una isla.',
+            aprendiz: 'Iba a una isla en el mar.',
+            imagen: '🏝️',
+          },
+        },
+      ],
+    },
+  ],
+};
+
+export const CASOS = [CASO_GATO_DE_LA_SUERTE, CASO_PIEDRAS_DE_RIO, CASO_MOAI_PERDIDO];
