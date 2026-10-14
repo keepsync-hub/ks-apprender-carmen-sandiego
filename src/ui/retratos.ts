@@ -1,4 +1,5 @@
-// Retratos en pixel art de 16×16 dibujados en un canvas, como en los juegos de los 90.
+// Retratos de bloques de 16×16 dibujados en un canvas, enmarcados como la foto de
+// avatar de Roblox.
 
 type Paleta = Record<string, string>;
 
@@ -315,6 +316,8 @@ export function dibujarRetrato(personaje: Personaje): HTMLCanvasElement {
   if (!ctx) return lienzo;
   RETRATOS[personaje].forEach((fila, y) => {
     [...fila].forEach((pixel, x) => {
+      // El fondo queda transparente: lo pone el marco (CSS), como una foto de avatar.
+      if (pixel === '.') return;
       ctx.fillStyle = PALETA[pixel] ?? PALETA['.'];
       ctx.fillRect(x, y, 1, 1);
     });

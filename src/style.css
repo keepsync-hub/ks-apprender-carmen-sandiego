@@ -1,16 +1,25 @@
-/* Estética retro de los 90: paleta VGA, ventanas biseladas, texto pixelado. */
+/* Estética Roblox: paneles oscuros redondeados, botones gruesos con contorno y
+   sombra (como en los juegos tipo «simulator»), letra redonda y gruesa. */
 :root {
-  --rojo-carmen: #d6202b;
+  --rojo-carmen: #e3242b;
+  --rojo-claro: #ff5a60;
   --rojo-oscuro: #8a0e16;
-  --ambar: #ffb000;
-  --azul-vga: #0000aa;
-  --gris-marco: #c0c0c0;
-  --gris-claro: #ffffff;
-  --gris-sombra: #555555;
-  --negro: #000000;
+  --verde: #00b06f;
+  --verde-claro: #4be08f;
+  --azul: #335fff;
+  --azul-claro: #6b8cff;
+  --dorado: #ffcc33;
+  --panel: rgba(29, 31, 38, 0.94);
+  --panel-claro: #2c303b;
+  --contorno: #0d0e12;
+  --blanco: #ffffff;
+  --gris: #9aa0ad;
+  --tarjeta: #ffffff;
+  --tarjeta-texto: #1d1f26;
   --texto: #ffffff;
-  --fuente-pixel: 'Press Start 2P', monospace;
-  --fuente-lectura: 'Trebuchet MS', 'Verdana', system-ui, sans-serif;
+  --radio: 18px;
+  --fuente-titulo: 'Fredoka', 'Trebuchet MS', system-ui, sans-serif;
+  --fuente-lectura: 'Fredoka', 'Trebuchet MS', 'Verdana', system-ui, sans-serif;
 }
 
 * {
@@ -22,9 +31,10 @@ body {
   margin: 0;
   height: 100%;
   overflow: hidden;
-  background: var(--negro);
+  background: #6fb7ff;
   color: var(--texto);
   font-family: var(--fuente-lectura);
+  font-weight: 500;
 }
 
 #scene {
@@ -49,40 +59,53 @@ body {
   pointer-events: auto;
 }
 
-/* Efecto CRT suave y desactivable (clase en <body>). */
+/* Efecto TV suave y desactivable (clase en <body>). */
 body.crt::after {
   content: '';
   position: fixed;
   inset: 0;
   pointer-events: none;
-  background: repeating-linear-gradient(to bottom, rgba(0, 0, 0, 0.14) 0 2px, transparent 2px 4px);
+  background: repeating-linear-gradient(to bottom, rgba(0, 0, 0, 0.1) 0 2px, transparent 2px 4px);
 }
 
-/* Ventana biselada estilo VGA. */
+/* Panel redondeado con contorno, como las ventanas de un juego de Roblox. */
 .ventana {
   width: min(560px, 100%);
-  background: var(--azul-vga);
-  border: 4px solid;
-  border-color: var(--gris-claro) var(--gris-sombra) var(--gris-sombra) var(--gris-claro);
-  box-shadow: 0 0 0 4px var(--negro), 8px 8px 0 4px rgba(0, 0, 0, 0.5);
+  background: var(--panel);
+  border: 3px solid var(--contorno);
+  border-radius: var(--radio);
+  box-shadow: 0 6px 0 rgba(0, 0, 0, 0.35), 0 16px 32px rgba(0, 0, 0, 0.3);
   padding: 20px;
   text-align: center;
 }
 
+/* Texto con contorno grueso, como los títulos de Roblox. */
+.titulo,
+.subtitulo,
+.estrellas,
+.crimenet-titulo,
+.terminal-titulo {
+  paint-order: stroke fill;
+  -webkit-text-stroke: 6px var(--contorno);
+}
+
 .titulo {
-  font-family: var(--fuente-pixel);
-  font-size: clamp(16px, 4.5vw, 28px);
-  line-height: 1.5;
+  font-family: var(--fuente-titulo);
+  font-weight: 700;
+  font-size: clamp(34px, 9vw, 56px);
+  line-height: 1.1;
   color: var(--rojo-carmen);
-  text-shadow: 3px 3px 0 var(--negro), -1px -1px 0 var(--gris-claro);
+  text-shadow: 0 5px 0 var(--contorno);
   margin: 0 0 8px;
+  transform: rotate(-2deg);
 }
 
 .subtitulo {
-  font-family: var(--fuente-pixel);
-  font-size: clamp(10px, 2.6vw, 14px);
-  color: var(--ambar);
-  line-height: 1.6;
+  font-family: var(--fuente-titulo);
+  font-weight: 700;
+  font-size: clamp(20px, 5vw, 28px);
+  color: var(--dorado);
+  line-height: 1.2;
   margin: 0 0 20px;
 }
 
@@ -99,43 +122,52 @@ body.crt::after {
   justify-content: center;
 }
 
-/* Botones grandes para dedos pequeños (≥ 64 px). */
+/* Botones grandes y gruesos para dedos pequeños (≥ 64 px). */
 .boton {
   min-height: 64px;
   min-width: 180px;
-  padding: 12px 20px;
-  font-family: var(--fuente-pixel);
-  font-size: 14px;
-  line-height: 1.6;
-  color: var(--gris-claro);
-  background: var(--rojo-carmen);
-  border: 4px solid;
-  border-color: #ff6b73 var(--rojo-oscuro) var(--rojo-oscuro) #ff6b73;
+  padding: 10px 20px 14px;
+  font-family: var(--fuente-titulo);
+  font-weight: 700;
+  font-size: 20px;
+  line-height: 1.2;
+  color: var(--blanco);
+  text-shadow: 0 2px 0 rgba(0, 0, 0, 0.35);
+  background: linear-gradient(var(--verde-claro), var(--verde));
+  border: 3px solid var(--contorno);
+  border-radius: 14px;
+  box-shadow: inset 0 -5px 0 rgba(0, 0, 0, 0.22), 0 4px 0 var(--contorno);
   cursor: pointer;
+  transition: transform 0.08s, filter 0.08s;
 }
 
 .boton:focus-visible {
-  outline: 3px solid var(--ambar);
-  outline-offset: 2px;
+  outline: 4px solid var(--dorado);
+  outline-offset: 3px;
 }
 
 /* Solo con mouse: en pantallas táctiles el «hover» queda pegado al último toque. */
 @media (hover: hover) {
-  .boton:hover {
-    background: #ee3340;
-    outline: 3px solid var(--ambar);
-    outline-offset: 2px;
+  .boton:hover:not(:disabled) {
+    filter: brightness(1.1);
+    transform: translateY(-2px);
   }
 }
 
-.boton:active {
-  border-color: var(--rojo-oscuro) #ff6b73 #ff6b73 var(--rojo-oscuro);
+.boton:active:not(:disabled) {
+  transform: translateY(3px);
+  box-shadow: inset 0 -2px 0 rgba(0, 0, 0, 0.22), 0 1px 0 var(--contorno);
+}
+
+.boton:disabled {
+  cursor: default;
 }
 
 .boton small {
   display: block;
   font-family: var(--fuente-lectura);
-  font-size: 14px;
+  font-weight: 500;
+  font-size: 15px;
   margin-top: 4px;
 }
 
@@ -153,20 +185,35 @@ body.crt::after {
   text-align: left;
 }
 
+/* Retrato como la foto de avatar de Roblox: cuadro redondeado con fondo celeste. */
 .retrato {
   flex: 0 0 auto;
   width: 88px;
   height: 88px;
   image-rendering: pixelated;
-  border: 4px solid var(--gris-marco);
-  background: var(--negro);
+  border: 3px solid var(--contorno);
+  border-radius: 16px;
+  background: radial-gradient(circle at 50% 35%, #d9ecff, #7fb4f0);
+  box-shadow: 0 4px 0 var(--contorno);
 }
 
-.dialogo .nombre {
-  font-family: var(--fuente-pixel);
-  font-size: 12px;
-  color: var(--ambar);
+.dialogo .nombre,
+.palabra .nombre {
+  display: inline-block;
+  font-family: var(--fuente-titulo);
+  font-weight: 700;
+  font-size: 16px;
+  color: var(--blanco);
+  background: var(--rojo-carmen);
+  border: 3px solid var(--contorno);
+  border-radius: 999px;
+  padding: 2px 14px;
   margin: 0 0 8px;
+}
+
+/* La etiqueta del nombre va en su propia línea, sobre la imagen de la pista. */
+.dialogo .nombre {
+  display: table;
 }
 
 .dialogo .texto {
@@ -184,6 +231,7 @@ body.crt::after {
 .boton.icono {
   font-family: var(--fuente-lectura);
   font-size: 28px;
+  background: linear-gradient(var(--azul-claro), var(--azul));
 }
 
 .aviso-fan {
@@ -192,9 +240,9 @@ body.crt::after {
   right: 0;
   bottom: 4px;
   text-align: center;
-  font-size: 11px;
-  color: rgba(255, 255, 255, 0.7);
-  text-shadow: 1px 1px 0 var(--negro);
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.85);
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.8);
   pointer-events: none;
 }
 
@@ -212,6 +260,7 @@ body.aprendiz .texto {
   width: 64px;
   padding: 0;
   display: none;
+  background: linear-gradient(#5a5f6e, #3a3e4a);
 }
 
 body.jugando:not(.pausado):not(.bloqueado) .boton-pausa {
@@ -238,9 +287,7 @@ body.jugando:not(.pausado):not(.bloqueado) .boton-pausa {
 
 .boton-ajuste {
   min-width: 160px;
-  background: var(--negro);
-  border-color: var(--gris-sombra) var(--negro) var(--negro) var(--gris-sombra);
-  color: var(--ambar);
+  background: linear-gradient(var(--azul-claro), var(--azul));
 }
 
 /* Mientras se juega, el aviso no debe tapar los controles. */
@@ -276,6 +323,7 @@ body.jugando .aviso-fan {
 .aviso-player .retrato {
   width: 56px;
   height: 56px;
+  border-radius: 12px;
 }
 
 .aviso-player .texto {
@@ -302,8 +350,8 @@ body.jugando .aviso-fan {
   width: 140px;
   height: 140px;
   border-radius: 50%;
-  background: rgba(0, 0, 170, 0.45);
-  border: 4px solid var(--gris-marco);
+  background: rgba(13, 14, 18, 0.35);
+  border: 4px solid rgba(255, 255, 255, 0.7);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -315,8 +363,8 @@ body.jugando .aviso-fan {
   width: 60px;
   height: 60px;
   border-radius: 50%;
-  background: var(--rojo-carmen);
-  border: 4px solid var(--gris-claro);
+  background: rgba(255, 255, 255, 0.9);
+  border: 3px solid var(--contorno);
 }
 
 .acciones {
@@ -342,8 +390,7 @@ body.jugando .aviso-fan {
 .boton-gancho {
   min-width: 90px;
   min-height: 90px;
-  background: #222;
-  border-color: #555 #000 #000 #555;
+  background: linear-gradient(var(--rojo-claro), var(--rojo-carmen));
 }
 
 #scene {
@@ -388,16 +435,16 @@ body.pausado .aviso-player {
 .bandera {
   width: 72px;
   height: 48px;
-  border: 2px solid var(--gris-claro);
-  box-shadow: 2px 2px 0 var(--negro);
+  border: 3px solid var(--contorno);
+  border-radius: 6px;
 }
 
 .muestra-color {
   display: inline-block;
   width: 44px;
   height: 44px;
-  border: 3px solid var(--gris-claro);
-  box-shadow: 2px 2px 0 var(--negro);
+  border: 3px solid var(--contorno);
+  border-radius: 10px;
 }
 
 .tira-pistas {
@@ -418,17 +465,20 @@ body.pausado .aviso-player {
 .ventana-mapa,
 .crimenet,
 .libreta,
-.resultado {
+.resultado,
+.palabra {
   width: min(760px, 100%);
   max-height: calc(100vh - 32px);
   overflow-y: auto;
 }
 
 .marco-mapa {
-  border: 4px solid var(--gris-marco);
+  border: 3px solid var(--contorno);
+  border-radius: 14px;
+  overflow: hidden;
   margin: 0 0 12px;
   line-height: 0;
-  background: #001a66;
+  background: #2f80ed;
 }
 
 /* El mapa no pasa de un tercio del alto para que las tarjetas se vean enteras. */
@@ -439,24 +489,24 @@ body.pausado .aviso-player {
 }
 
 .mapamundi .oceano {
-  fill: #001a66;
+  fill: #2f80ed;
 }
 
 .mapamundi .tierra polygon {
-  fill: #2e8b3a;
-  stroke: #9be07a;
+  fill: #4b974b;
+  stroke: #a4e07a;
   stroke-width: 0.8;
 }
 
 .mapamundi .ruta {
-  stroke: var(--ambar);
+  stroke: var(--dorado);
   stroke-width: 1.5;
   stroke-dasharray: 3 3;
 }
 
 .mapamundi .punto {
-  fill: var(--ambar);
-  stroke: var(--negro);
+  fill: var(--dorado);
+  stroke: var(--contorno);
   stroke-width: 0.6;
 }
 
@@ -466,7 +516,7 @@ body.pausado .aviso-player {
 
 .mapamundi .avion {
   font-size: 14px;
-  fill: var(--gris-claro);
+  fill: var(--blanco);
   text-anchor: middle;
   dominant-baseline: central;
 }
@@ -478,14 +528,24 @@ body.pausado .aviso-player {
   margin: 0 0 12px;
 }
 
+/* Tarjetas blancas, como los botones de juegos en la portada de Roblox. */
+.tarjeta-destino,
+.tarjeta-caso,
+.fila-pista,
+.carta-ciudad,
+.ficha-palabra,
+.palabra-opcion {
+  background: var(--tarjeta);
+  color: var(--tarjeta-texto);
+  text-shadow: none;
+}
+
 .tarjeta-destino {
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 6px;
   min-height: 150px;
-  background: var(--negro);
-  border-color: var(--gris-sombra) var(--negro) var(--negro) var(--gris-sombra);
 }
 
 .tarjeta-icono {
@@ -496,11 +556,11 @@ body.pausado .aviso-player {
 .tarjeta-nombre {
   font-family: var(--fuente-lectura);
   font-size: 18px;
-  font-weight: bold;
+  font-weight: 700;
 }
 
 .tarjeta-destino.correcta {
-  outline: 4px solid #3bb273;
+  outline: 5px solid var(--verde);
 }
 
 .tarjeta-destino.equivocada {
@@ -513,17 +573,17 @@ body.pausado .aviso-player {
   75% { transform: translateX(6px); }
 }
 
-/* Crime Net: pantalla ámbar de computadora antigua. */
+/* Crime Net: pantalla de computadora ámbar. */
 .crimenet {
-  background: #1a0f00;
-  color: var(--ambar);
+  background: rgba(40, 26, 4, 0.95);
+  color: var(--dorado);
 }
 
 .crimenet-titulo {
-  font-family: var(--fuente-pixel);
-  font-size: clamp(16px, 4vw, 24px);
-  color: var(--ambar);
-  text-shadow: 0 0 8px #ff8c00;
+  font-family: var(--fuente-titulo);
+  font-weight: 700;
+  font-size: clamp(26px, 6vw, 36px);
+  color: var(--dorado);
   margin: 0 0 8px;
 }
 
@@ -537,15 +597,15 @@ body.pausado .aviso-player {
   flex-direction: column;
   align-items: center;
   gap: 4px;
-  background: #2a1a00;
-  border-color: #5a3a00 #000 #000 #5a3a00;
-  color: var(--ambar);
+  background: linear-gradient(#5a4214, #3d2c0a);
+  color: var(--dorado);
 }
 
 .boton-rasgo.elegido {
-  background: var(--ambar);
-  color: var(--negro);
-  outline: 3px solid var(--gris-claro);
+  background: linear-gradient(#ffe07a, var(--dorado));
+  color: var(--contorno);
+  text-shadow: none;
+  outline: 4px solid var(--blanco);
 }
 
 .sospechosos {
@@ -578,7 +638,7 @@ body.pausado .aviso-player {
 /* Libreta de pistas */
 .lista-pistas {
   display: grid;
-  gap: 8px;
+  gap: 10px;
   margin: 0 0 16px;
 }
 
@@ -588,17 +648,15 @@ body.pausado .aviso-player {
   gap: 12px;
   text-align: left;
   font-family: var(--fuente-lectura);
+  font-weight: 500;
   font-size: clamp(16px, 3.6vw, 20px);
-  background: var(--negro);
-  border-color: var(--gris-sombra) var(--negro) var(--negro) var(--gris-sombra);
 }
 
 /* Resultado */
 .estrellas {
   font-size: 56px;
-  color: #ffd23f;
+  color: var(--dorado);
   margin: 0 0 8px;
-  text-shadow: 3px 3px 0 var(--negro);
 }
 
 .cartas-ciudad {
@@ -614,10 +672,8 @@ body.pausado .aviso-player {
   align-items: center;
   gap: 6px;
   font-family: var(--fuente-lectura);
+  font-weight: 500;
   font-size: 16px;
-  background: #fff8e1;
-  color: #222;
-  border-color: #fff #b8a878 #b8a878 #fff;
 }
 
 /* Botón de la libreta, al lado de la pausa. */
@@ -632,6 +688,7 @@ body.pausado .aviso-player {
   font-size: 28px;
   display: none;
   z-index: 2;
+  background: linear-gradient(#ffe07a, var(--dorado));
 }
 
 body.jugando:not(.pausado):not(.bloqueado) .boton-libreta {
@@ -678,24 +735,24 @@ body.bloqueado .aviso-player {
   }
 }
 
-/* ---------- Labial hacker: terminal verde de los 90 ---------- */
+/* ---------- Labial hacker: terminal verde ---------- */
 .terminal {
   width: min(520px, 100%);
-  background: #001a00;
+  background: rgba(4, 30, 10, 0.95);
   color: #39ff14;
   max-height: calc(100vh - 32px);
   overflow-y: auto;
 }
 
 .terminal.concedido {
-  background: #003300;
+  background: rgba(6, 60, 20, 0.95);
 }
 
 .terminal-titulo {
-  font-family: var(--fuente-pixel);
-  font-size: clamp(14px, 4vw, 20px);
+  font-family: var(--fuente-titulo);
+  font-weight: 700;
+  font-size: clamp(22px, 5vw, 30px);
   color: #39ff14;
-  text-shadow: 0 0 8px #39ff14;
   margin: 0 0 8px;
 }
 
@@ -714,6 +771,7 @@ body.bloqueado .aviso-player {
   width: 28px;
   height: 14px;
   border: 2px solid #39ff14;
+  border-radius: 999px;
 }
 
 .casilla.lista {
@@ -733,8 +791,9 @@ body.bloqueado .aviso-player {
   font-size: clamp(40px, 12vw, 64px);
   color: rgba(0, 0, 0, 0.55);
   background: var(--color);
-  border: 4px solid rgba(255, 255, 255, 0.5);
-  border-radius: 12px;
+  border: 3px solid var(--contorno);
+  border-radius: 18px;
+  box-shadow: inset 0 -6px 0 rgba(0, 0, 0, 0.25), 0 4px 0 var(--contorno);
   opacity: 0.55;
   cursor: pointer;
   touch-action: manipulation;
@@ -744,7 +803,7 @@ body.bloqueado .aviso-player {
 .boton-hackeo.encendido {
   opacity: 1;
   transform: scale(1.06);
-  box-shadow: 0 0 24px var(--color);
+  box-shadow: 0 0 24px var(--color), 0 4px 0 var(--contorno);
   border-color: #fff;
 }
 
@@ -754,8 +813,7 @@ body.bloqueado .aviso-player {
 
 .boton-salir {
   min-width: 120px;
-  background: #333;
-  border-color: #666 #111 #111 #666;
+  background: linear-gradient(#5a5f6e, #3a3e4a);
 }
 
 /* ---------- Elegir un caso ---------- */
@@ -763,6 +821,17 @@ body.bloqueado .aviso-player {
   width: min(760px, 100%);
   max-height: calc(100vh - 32px);
   overflow-y: auto;
+}
+
+.contador-palabras {
+  display: inline-block;
+  font-size: 18px;
+  font-weight: 700;
+  background: var(--panel-claro);
+  border: 3px solid var(--contorno);
+  border-radius: 999px;
+  padding: 4px 16px;
+  margin: -8px 0 16px;
 }
 
 .lista-casos {
@@ -778,8 +847,6 @@ body.bloqueado .aviso-player {
   align-items: center;
   gap: 8px;
   padding: 16px;
-  background: var(--negro);
-  border-color: var(--gris-sombra) var(--negro) var(--negro) var(--gris-sombra);
 }
 
 .tarjeta-caso .tarjeta-icono {
@@ -797,6 +864,8 @@ body.bloqueado .aviso-player {
   gap: 4px;
   flex-wrap: wrap;
   justify-content: center;
+  font-weight: 500;
+  font-size: 16px;
 }
 
 .ruta-caso .bandera {
@@ -807,5 +876,144 @@ body.bloqueado .aviso-player {
 .estrellas-caso {
   font-family: var(--fuente-lectura);
   font-size: 26px;
-  color: #ffd23f;
+  color: #f5a400;
+}
+
+/* ---------- Aprende una palabra (dinámica de Aprender Jugando 3D) ---------- */
+.palabra .subtitulo {
+  margin-bottom: 12px;
+}
+
+.palabra-cabecera {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 0 0 8px;
+}
+
+.palabra-cabecera .retrato {
+  width: 64px;
+  height: 64px;
+}
+
+.palabra-bocadillo {
+  text-align: left;
+  margin-bottom: 12px;
+}
+
+.palabra-bocadillo strong {
+  color: var(--dorado);
+}
+
+.palabra-grande {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  margin: 0 0 12px;
+}
+
+.palabra-en {
+  font-family: var(--fuente-titulo);
+  font-weight: 700;
+  font-size: clamp(40px, 11vw, 64px);
+  line-height: 1;
+  color: var(--blanco);
+  paint-order: stroke fill;
+  -webkit-text-stroke: 8px var(--azul);
+}
+
+.palabra-grande .boton {
+  min-width: 64px;
+}
+
+.palabra-pista {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  text-align: left;
+  font-size: clamp(17px, 3.8vw, 20px);
+  background: var(--panel-claro);
+  border: 3px solid var(--contorno);
+  border-radius: 14px;
+  padding: 10px 14px;
+  margin: 0 0 14px;
+}
+
+.palabra-pista-etiqueta {
+  flex: 0 0 auto;
+  font-weight: 700;
+  color: var(--dorado);
+}
+
+.palabra-opciones {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+  margin: 0 0 12px;
+}
+
+.palabra-opcion {
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  font-size: clamp(18px, 4.4vw, 24px);
+}
+
+.palabra-emoji {
+  font-size: 1.6em;
+  line-height: 1;
+}
+
+.palabra-opcion.correcta {
+  background: linear-gradient(var(--verde-claro), var(--verde));
+  color: var(--blanco);
+}
+
+.palabra-opcion.equivocada {
+  opacity: 0.35;
+  animation: temblar 0.3s;
+}
+
+.palabra-aviso {
+  min-height: 1.4em;
+  font-size: clamp(18px, 4vw, 22px);
+  font-weight: 700;
+  margin: 0 0 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.palabra-aviso.bien {
+  color: var(--verde-claro);
+}
+
+.palabra-aviso.mal {
+  color: var(--rojo-claro);
+}
+
+.fichas-palabras {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  justify-content: center;
+  margin: 0 0 16px;
+}
+
+.ficha-palabra {
+  min-width: 120px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  font-weight: 500;
+  font-size: 16px;
+}
+
+.ficha-palabra strong {
+  font-size: 22px;
 }

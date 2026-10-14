@@ -1,6 +1,7 @@
 import { sonar } from '../core/sonido';
-import { hablar } from '../core/voz';
+import { hablar, hablarFrases } from '../core/voz';
 import { CIUDADES } from '../data/ciudades';
+import { PALABRAS, PALABRAS_POR_ID } from '../data/palabras';
 import type { Caso, Pista } from '../data/tipos';
 import type { EstadoCaso } from '../missions/caso';
 import { banderaSvg, imagenPista } from './banderas';
@@ -41,11 +42,13 @@ export interface OpcionesResultado {
   estado: EstadoCaso;
   rango: string;
   subioDeRango: boolean;
+  /** Ids de las palabras en inglés que salieron en el caso. */
+  palabras: string[];
   alTitulo: () => void;
 }
 
 /** Pantalla final: estrellas, rango y lo aprendido en cada ciudad. */
-export function mostrarResultado({ estado, rango, subioDeRango, alTitulo }: OpcionesResultado): void {
+export function mostrarResultado({ estado, rango, subioDeRango, palabras, alTitulo }: OpcionesResultado): void {
   limpiar();
   const estrellas = estado.estrellas();
   const ventana = elemento('div', 'ventana resultado');
@@ -67,6 +70,20 @@ export function mostrarResultado({ estado, rango, subioDeRango, alTitulo }: Opci
     );
     cartas.append(carta);
   }
+  const fichas = elemento('div', 'fichas-palabras');
+  for (const id of palabras) {
+    const p = PALABRAS_POR_ID[id];
+    const ficha = boton('', () => hablarFrases([{ texto: p.en, ingles: true }, { texto: p.es }]));
+    ficha.classList.add('ficha-palabra');
+    ficha.append(
+      elemento('span', 'palabra-emoji', p.emoji),
+      elemento('strong', '', p.en),
+      elemento('span', '', p.es),
+    );
+    fichas.append(ficha);
+  }
+  if (palabras.length) ventana.append(cartas, elemento('p', 'etiqueta', 'Palabras en inglés:'), fichas);
+  else ventana.append(cartas);
   const botones = elemento('div', 'botones');
   botones.append(
     boton('Volver al título', () => {
@@ -74,7 +91,7 @@ export function mostrarResultado({ estado, rango, subioDeRango, alTitulo }: Opci
       alTitulo();
     }),
   );
-  ventana.append(cartas, botones);
+  ventana.append(botones);
   document.getElementById('ui')!.append(ventana);
   sonar('fanfarria');
   hablar(
@@ -87,6 +104,8 @@ export interface OpcionesElegirCaso {
   casos: Caso[];
   /** Mejores estrellas por id de caso. */
   estrellas: Record<string, number>;
+  /** Cuántas palabras en inglés se han aprendido. */
+  palabrasAprendidas: number;
   alElegir: (caso: Caso) => void;
   alVolver: () => void;
 }
@@ -95,11 +114,14 @@ export interface OpcionesElegirCaso {
  * Tarjetas grandes con el tesoro, la ciudad donde empieza y las estrellas ganadas.
  * No se muestra la ruta completa: sería darle las respuestas del mapa.
  */
-export function elegirCaso({ casos, estrellas, alElegir, alVolver }: OpcionesElegirCaso): void {
+export function elegirCaso({ casos, estrellas, palabrasAprendidas, alElegir, alVolver }: OpcionesElegirCaso): void {
   limpiar();
   const ventana = elemento('div', 'ventana elegir-caso');
   const pregunta = 'Elige un caso';
-  ventana.append(elemento('p', 'subtitulo', pregunta));
+  ventana.append(
+    elemento('p', 'subtitulo', pregunta),
+    elemento('p', 'contador-palabras', `📖 ${palabrasAprendidas} de ${PALABRAS.length} palabras en inglés`),
+  );
   const lista = elemento('div', 'lista-casos');
   for (const caso of casos) {
     const ganadas = estrellas[caso.id] ?? 0;

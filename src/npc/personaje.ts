@@ -1,12 +1,10 @@
 import * as THREE from 'three';
+import { cabezaRoblox, plastico } from '../world/estilo';
 
-// Personajes de bloques para testigos y operativos de V.I.L.E.
+// Personajes de bloques al estilo Roblox para testigos y operativos de V.I.L.E.
 
 function caja(ancho: number, alto: number, fondo: number, color: number): THREE.Mesh {
-  const malla = new THREE.Mesh(
-    new THREE.BoxGeometry(ancho, alto, fondo),
-    new THREE.MeshLambertMaterial({ color }),
-  );
+  const malla = new THREE.Mesh(new THREE.BoxGeometry(ancho, alto, fondo), plastico(color));
   malla.castShadow = true;
   return malla;
 }
@@ -15,6 +13,9 @@ export interface OpcionesPersonaje {
   ropa: number;
   piel?: number;
   pelo?: number;
+  /** Color de los brazos (la ropa si falta). */
+  brazos?: number;
+  piernas?: number;
   /** Accesorio en la cabeza. */
   accesorio?: 'gorra' | 'cuernos' | 'casco' | 'orejas' | 'ninguno';
 }
@@ -28,28 +29,24 @@ export interface Personaje {
 
 export function crearPersonaje(opciones: OpcionesPersonaje): Personaje {
   const { ropa, piel = 0xd9a47a, pelo = 0x2b1a12, accesorio = 'ninguno' } = opciones;
+  const { brazos = ropa, piernas = 0x2a2a3a } = opciones;
   const modelo = new THREE.Group();
 
   const cuerpo = new THREE.Group();
   const torso = caja(1, 1.3, 0.55, ropa);
   torso.position.y = 1.85;
-  const cabeza = caja(0.75, 0.75, 0.75, piel);
-  cabeza.position.y = 2.9;
+  const cabeza = cabezaRoblox(piel, 2.9);
   const cabello = caja(0.8, 0.25, 0.8, pelo);
   cabello.position.y = 3.3;
-  const ojoIzq = caja(0.1, 0.14, 0.02, 0x111111);
-  ojoIzq.position.set(-0.16, 2.95, 0.38);
-  const ojoDer = ojoIzq.clone();
-  ojoDer.position.x = 0.16;
-  const piernaIzq = caja(0.45, 1.2, 0.45, 0x2a2a3a);
+  const piernaIzq = caja(0.45, 1.2, 0.45, piernas);
   piernaIzq.position.set(-0.25, 0.6, 0);
   const piernaDer = piernaIzq.clone();
   piernaDer.position.x = 0.25;
-  const brazoIzq = caja(0.38, 1.2, 0.4, ropa);
+  const brazoIzq = caja(0.38, 1.2, 0.4, brazos);
   brazoIzq.position.set(-0.7, 1.9, 0);
   const brazoDer = brazoIzq.clone();
   brazoDer.position.x = 0.7;
-  cuerpo.add(torso, cabeza, cabello, ojoIzq, ojoDer, piernaIzq, piernaDer, brazoIzq, brazoDer);
+  cuerpo.add(torso, cabeza, cabello, piernaIzq, piernaDer, brazoIzq, brazoDer);
 
   if (accesorio === 'gorra') {
     const gorra = caja(0.82, 0.2, 0.82, ropa);
@@ -67,12 +64,12 @@ export function crearPersonaje(opciones: OpcionesPersonaje): Personaje {
     );
     lampara.position.set(0, 3.42, 0.47);
     const lentes = caja(0.7, 0.16, 0.05, 0x111111);
-    lentes.position.set(0, 2.98, 0.39);
+    lentes.position.set(0, 2.98, 0.43);
     cuerpo.add(casco, lampara, lentes);
   } else if (accesorio === 'orejas') {
     // Antifaz y orejas de gato, para Tigress.
     const antifaz = caja(0.8, 0.22, 0.05, ropa);
-    antifaz.position.set(0, 2.97, 0.39);
+    antifaz.position.set(0, 2.97, 0.43);
     cuerpo.add(antifaz);
     for (const lado of [-1, 1]) {
       const oreja = caja(0.22, 0.3, 0.12, ropa);

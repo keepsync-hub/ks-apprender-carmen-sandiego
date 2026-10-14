@@ -1,8 +1,10 @@
 import * as THREE from 'three';
 import type { TemaCiudad } from '../data/tipos';
+import { liberarGrupo, plastico, texturaStuds } from './estilo';
 
-// Barrio de azoteas de bloques. Cada ciudad del caso cambia el cielo, los colores
-// y agrega su hito (puente, pirámide u obelisco) hecho de cajas.
+// Barrio de azoteas de bloques al estilo Roblox: piezas de plástico con studs en el
+// suelo y en los techos. Cada ciudad del caso cambia el cielo, los colores y agrega
+// su hito (puente, pirámide u obelisco) hecho de cajas.
 
 /** Generador pseudoaleatorio con semilla: una ciudad siempre sale igual. */
 function azar(semilla: number): () => number {
@@ -41,7 +43,7 @@ export interface Ciudad {
 }
 
 const TEMA_ENTRENAMIENTO: TemaCiudad = {
-  cielo: 0xff9e6b,
+  cielo: 0x8fd3ff,
   edificios: [0xf2c14e, 0x5b8e7d, 0xf78154, 0x4d9de0, 0xe15554, 0x7768ae, 0x3bb273],
   hito: 'ninguno',
 };
@@ -60,23 +62,25 @@ export function crearCiudad(tema: TemaCiudad = TEMA_ENTRENAMIENTO, semilla = 198
     solidos.push(new THREE.Box3().setFromObject(malla));
   };
   const bloque: Bloque = (ancho, alto, fondo, color, x, y, z) => {
-    const malla = new THREE.Mesh(
-      new THREE.BoxGeometry(ancho, alto, fondo),
-      new THREE.MeshLambertMaterial({ color }),
-    );
+    // Studs solo en la cara de arriba (donde se camina); los lados quedan lisos.
+    const liso = plastico(color);
+    const conStuds = plastico(color, texturaStuds(ancho, fondo));
+    const malla = new THREE.Mesh(new THREE.BoxGeometry(ancho, alto, fondo), [
+      liso, liso, conStuds, liso, liso, liso,
+    ]);
     malla.position.set(x, y, z);
     agregar(malla);
     return malla;
   };
   const r = azar(semilla);
 
-  bloque(200, 1, 200, tema.suelo ?? 0x3a3a46, 0, -0.5, 0);
+  bloque(200, 1, 200, tema.suelo ?? 0x5d6068, 0, -0.5, 0);
   const rangoAltura = (tema.alturaMaxima ?? 18) - 4;
 
   const materialVentana = new THREE.MeshBasicMaterial({ color: 0xfff3b0 });
   const geoAnclaje = new THREE.OctahedronGeometry(0.4);
   const matAnclaje = new THREE.MeshBasicMaterial({ color: 0xff2d3a });
-  const matPoste = new THREE.MeshLambertMaterial({ color: 0x222222 });
+  const matPoste = plastico(0x222222);
 
   const alturaInicio = 8;
   const inicio = new THREE.Vector3(8, alturaInicio, 8);
@@ -134,12 +138,7 @@ export function crearCiudad(tema: TemaCiudad = TEMA_ENTRENAMIENTO, semilla = 198
       }
     },
     liberar() {
-      grupo.traverse((o) => {
-        if (o instanceof THREE.Mesh) {
-          o.geometry.dispose();
-          (o.material as THREE.Material).dispose();
-        }
-      });
+      liberarGrupo(grupo);
     },
   };
 }
@@ -188,7 +187,7 @@ function construirHito(hito: TemaCiudad['hito'], bloque: Bloque, grupo: THREE.Gr
     bloque(3.2, 13, 3.2, 0xb9a37e, -24, 7.5, -24);
     const globo = new THREE.Mesh(
       new THREE.SphereGeometry(2, 16, 12),
-      new THREE.MeshLambertMaterial({ color: 0x3b7dd8, flatShading: true }),
+      new THREE.MeshStandardMaterial({ color: 0x3b7dd8, flatShading: true, roughness: 0.55 }),
     );
     globo.position.set(-24, 16, -24);
     globo.castShadow = true;

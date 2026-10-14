@@ -24,6 +24,7 @@ describe('guardado', () => {
     const p = cargarProgreso();
     expect(p.dificultad).toBe('aprendiz');
     expect(p.ajustes.voz).toBe(true);
+    expect(p.palabras).toEqual({});
   });
 
   it('guarda y recupera los ajustes', () => {
