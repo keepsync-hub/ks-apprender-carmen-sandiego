@@ -1,4 +1,5 @@
-import '@fontsource/press-start-2p/400.css';
+import '@fontsource/fredoka/500.css';
+import '@fontsource/fredoka/700.css';
 import './style.css';
 import * as THREE from 'three';
 import { crearEntrada, esTactil } from './core/entrada';
@@ -9,6 +10,7 @@ import { CASOS } from './data/casos';
 import type { Caso } from './data/tipos';
 import { crearGancho } from './gadgets/gancho';
 import { iniciarPartida, type Mundo, type Partida } from './missions/partida';
+import { registrarRespuesta } from './missions/palabras';
 import { crearCarmen } from './player/carmen';
 import { crearControlador } from './player/controlador';
 import {
@@ -30,8 +32,8 @@ renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 renderer.shadowMap.enabled = true;
 
 const escena = new THREE.Scene();
-escena.background = new THREE.Color(0xff9e6b); // atardecer
-escena.fog = new THREE.Fog(0xff9e6b, 40, 110);
+escena.background = new THREE.Color(0x8fd3ff); // cielo celeste, como en Roblox
+escena.fog = new THREE.Fog(0x8fd3ff, 40, 110);
 
 const camara = new THREE.PerspectiveCamera(55, 1, 0.1, 300);
 
@@ -189,6 +191,7 @@ function mostrarCasos(): void {
   elegirCaso({
     casos: CASOS,
     estrellas: progreso.estrellas,
+    palabrasAprendidas: Object.keys(progreso.palabras).length,
     alElegir: jugar,
     alVolver: () => mostrarTitulo(empezar),
   });
@@ -226,6 +229,11 @@ const mundo: Mundo = {
     progreso.estrellas[id] = Math.max(progreso.estrellas[id] ?? 0, estrellas);
     guardarProgreso(progreso);
     return { antes, despues: progreso.casosResueltos.length };
+  },
+  vocabulario: () => progreso.palabras,
+  alResponderPalabra(id, alPrimerIntento) {
+    progreso.palabras = registrarRespuesta(progreso.palabras, id, alPrimerIntento);
+    guardarProgreso(progreso);
   },
   alSalir: salirAlTitulo,
 };

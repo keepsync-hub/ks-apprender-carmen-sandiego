@@ -11,10 +11,12 @@ import { mostrarLibreta, mostrarResultado } from '../ui/caso-ui';
 import { mostrarCrimeNet } from '../ui/crimenet';
 import { mostrarHackeo } from '../ui/hackeo';
 import { mostrarMapa } from '../ui/mapa';
+import { mostrarPalabra, type OpcionesPalabra } from '../ui/palabra-ui';
 import { avisoPlayer, dialogo, elemento, type Linea } from '../ui/pantallas';
 import { crearCiudad, semillaDe, type Ciudad } from '../world/ciudad';
 import { EstadoCaso, rango } from './caso';
 import { lugaresTestigos, rutaDeHuida } from './lugares';
+import { elegirPalabra, type Vocabulario } from './palabras';
 
 // Orquesta un caso completo: carga cada ciudad, ubica testigos y ladrón en las
 // azoteas, detecta cuando Carmen se acerca y encadena mapa, Crime Net y final.
@@ -31,6 +33,10 @@ export interface Mundo {
   nivel: () => Dificultad;
   /** Se llama al resolver el caso con las estrellas; devuelve casos resueltos antes y después. */
   alResolver(casoId: string, estrellas: number): { antes: number; despues: number };
+  /** Palabras en inglés aprendidas, con su dominio. */
+  vocabulario(): Vocabulario;
+  /** Guarda la respuesta a «aprende una palabra». */
+  alResponderPalabra(id: string, alPrimerIntento: boolean): void;
   alSalir(): void;
 }
 
@@ -69,6 +75,8 @@ export function iniciarPartida(caso: Caso, mundo: Mundo): Partida {
   let etapaLadron = 0;
   let salto: { desde: THREE.Vector3; hasta: THREE.Vector3; t: number } | null = null;
   let atrapado = false;
+  /** Palabras en inglés que salieron en este caso, para la pantalla final. */
+  const palabrasDelCaso: string[] = [];
 
   const botonLibreta = elemento('button', 'boton boton-libreta', '📒');
   botonLibreta.ariaLabel = 'Libreta de pistas';
@@ -116,7 +124,10 @@ export function iniciarPartida(caso: Caso, mundo: Mundo): Partida {
     const lugares = lugaresTestigos(ciudad, actuales.length);
     testigos = actuales.map((t, indice) => {
       const personaje =
-        t.tipo === 'computadora' ? crearComputadora() : crearPersonaje({ ropa: t.color, accesorio: 'gorra' });
+        t.tipo === 'computadora'
+          ? crearComputadora()
+          : // Testigos con los colores del «noob» clásico de Roblox: amarillo y verde.
+            crearPersonaje({ ropa: t.color, piel: 0xf5cd30, brazos: 0xf5cd30, piernas: 0xa4bd47, accesorio: 'gorra' });
       personaje.modelo.position.copy(lugares[indice]);
       mirarHacia(personaje.modelo, ciudad!.inicio);
       mundo.escena.add(personaje.modelo);
@@ -134,7 +145,7 @@ export function iniciarPartida(caso: Caso, mundo: Mundo): Partida {
     // El tesoro dorado en sus manos.
     const tesoro = new THREE.Mesh(
       new THREE.BoxGeometry(0.6, 0.6, 0.6),
-      new THREE.MeshLambertMaterial({ color: 0xffc629, emissive: 0x553300 }),
+      new THREE.MeshStandardMaterial({ color: 0xffc629, emissive: 0x553300, roughness: 0.3, metalness: 0.4 }),
     );
     tesoro.position.set(0, 1.9, 0.5);
     ladron.modelo.add(tesoro);
@@ -147,8 +158,20 @@ export function iniciarPartida(caso: Caso, mundo: Mundo): Partida {
 
   function hablarConTestigo(t: TestigoEnMundo): void {
     abrirPantalla();
-    if (estado.testigosActuales()[t.indice].tipo !== 'computadora') {
-      mostrarPista(t);
+    const datos = estado.testigosActuales()[t.indice];
+    if (datos.tipo !== 'computadora') {
+      // Como en Aprender Jugando 3D: para recibir la pista, primero se aprende una palabra.
+      aprenderPalabra(
+        {
+          quien: 'testigo',
+          nombre: datos.nombre,
+          motivo: {
+            texto: '¡Te cuento lo que vi! Pero antes, aprende una palabra en inglés.',
+            aprendiz: '¡Te doy mi pista! Primero, una palabra.',
+          },
+        },
+        () => mostrarPista(t),
+      );
       return;
     }
     // Computadora de V.I.L.E.: primero hay que hackearla con el labial.
@@ -161,6 +184,24 @@ export function iniciarPartida(caso: Caso, mundo: Mundo): Partida {
         enfriando.add(t.indice);
         cerrarPantalla();
         avisoPlayer(aprendiz ? 'Vuelve cuando quieras.' : 'Puedes volver a hackearla cuando quieras.', 3);
+      },
+    });
+  }
+
+  /** Enseña la siguiente palabra en inglés y sigue con `despues` al acertar. */
+  function aprenderPalabra(
+    quien: Pick<OpcionesPalabra, 'quien' | 'nombre' | 'motivo'>,
+    despues: () => void,
+  ): void {
+    const palabra = elegirPalabra(mundo.vocabulario(), palabrasDelCaso);
+    if (!palabrasDelCaso.includes(palabra.id)) palabrasDelCaso.push(palabra.id);
+    mostrarPalabra({
+      ...quien,
+      palabra,
+      nivel: mundo.nivel(),
+      alTerminar(alPrimerIntento) {
+        mundo.alResponderPalabra(palabra.id, alPrimerIntento);
+        despues();
       },
     });
   }
@@ -278,6 +319,31 @@ export function iniciarPartida(caso: Caso, mundo: Mundo): Partida {
           aprendiz: '¡Te atrapé!',
         }),
         segun({ quien: caso.ladron, ...caso.fraseLadron }),
+      ],
+      () =>
+        // El tesoro está en un cofre con candado: la clave es una palabra en inglés.
+        aprenderPalabra(
+          {
+            quien: 'player',
+            nombre: 'Player',
+            motivo: {
+              texto: '¡El tesoro está en un cofre con candado! La clave es una palabra en inglés.',
+              aprendiz: '¡El cofre tiene candado! La clave es una palabra.',
+            },
+          },
+          entregarTesoro,
+        ),
+    );
+  }
+
+  function entregarTesoro(): void {
+    dialogo(
+      [
+        segun({
+          quien: 'carmen',
+          texto: '¡Clic! El cofre se abrió. ¡Misión cumplida!',
+          aprendiz: '¡Clic! ¡Se abrió!',
+        }),
         segun({
           quien: 'chase',
           texto: '¡Alto ahí, Carmen Sandiego! ...¿Eh? Ya se fue. Solo dejó una tarjeta roja.',
@@ -296,6 +362,7 @@ export function iniciarPartida(caso: Caso, mundo: Mundo): Partida {
           estado,
           rango: rango(despues),
           subioDeRango: rango(antes) !== rango(despues),
+          palabras: palabrasDelCaso,
           alTitulo: () => {
             terminar();
             mundo.alSalir();

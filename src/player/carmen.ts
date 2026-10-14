@@ -1,6 +1,8 @@
 import * as THREE from 'three';
+import { cabezaRoblox, plastico } from '../world/estilo';
 
-// Carmen hecha de bloques, al estilo Roblox: cada parte es una caja.
+// Carmen hecha de bloques, al estilo Roblox: piezas de plástico y cabeza cilíndrica
+// con la carita clásica.
 const COLORES = {
   gabardina: 0xd6202b,
   gabardinaOscura: 0xa3141d,
@@ -8,14 +10,10 @@ const COLORES = {
   pelo: 0x2b1a12,
   pantalon: 0x1c1c24,
   guantes: 0x111111,
-  ojos: 0x111111,
 };
 
 function caja(ancho: number, alto: number, fondo: number, color: number): THREE.Mesh {
-  const malla = new THREE.Mesh(
-    new THREE.BoxGeometry(ancho, alto, fondo),
-    new THREE.MeshLambertMaterial({ color }),
-  );
+  const malla = new THREE.Mesh(new THREE.BoxGeometry(ancho, alto, fondo), plastico(color));
   malla.castShadow = true;
   return malla;
 }
@@ -39,16 +37,10 @@ export function crearCarmen(): Carmen {
   const faldon = caja(1.1, 0.6, 0.65, COLORES.gabardinaOscura);
   faldon.position.y = 1.3;
 
-  const cabeza = caja(0.75, 0.75, 0.75, COLORES.piel);
-  cabeza.position.y = 3;
+  const cabeza = cabezaRoblox(COLORES.piel, 3);
 
   const pelo = caja(0.8, 0.9, 0.3, COLORES.pelo);
   pelo.position.set(0, 2.9, -0.3);
-
-  const ojoIzq = caja(0.1, 0.14, 0.02, COLORES.ojos);
-  ojoIzq.position.set(-0.16, 3.05, 0.38);
-  const ojoDer = ojoIzq.clone();
-  ojoDer.position.x = 0.16;
 
   // Sombrero fedora: ala ancha + copa.
   const ala = caja(1.3, 0.08, 1.3, COLORES.gabardina);
@@ -80,7 +72,7 @@ export function crearCarmen(): Carmen {
   caderaDer.position.x = 0.25;
 
   modelo.add(
-    torso, faldon, cabeza, pelo, ojoIzq, ojoDer, ala, copa, cinta,
+    torso, faldon, cabeza, pelo, ala, copa, cinta,
     hombroIzq, hombroDer, caderaIzq, caderaDer,
   );
 

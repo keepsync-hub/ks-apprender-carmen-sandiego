@@ -16,14 +16,15 @@ export interface Progreso {
   casosResueltos: string[];
   /** Mejor cantidad de estrellas por caso. */
   estrellas: Record<string, number>;
+  /** Palabras en inglés aprendidas y su dominio (1 a 3), por id. */
+  palabras: Record<string, number>;
 }
 
 const CLAVE = 'carmen-progreso-v1';
 
 function ajustesIniciales(): Ajustes {
-  const reducirMovimiento =
-    typeof matchMedia === 'function' && matchMedia('(prefers-reduced-motion: reduce)').matches;
-  return { voz: true, sonido: true, efectoTv: !reducirMovimiento };
+  // Las líneas de TV no calzan con el estilo Roblox: quedan apagadas salvo que se activen.
+  return { voz: true, sonido: true, efectoTv: false };
 }
 
 export function cargarProgreso(): Progreso {
@@ -32,6 +33,7 @@ export function cargarProgreso(): Progreso {
     ajustes: ajustesIniciales(),
     casosResueltos: [],
     estrellas: {},
+    palabras: {},
   };
   try {
     const guardado = localStorage.getItem(CLAVE);
